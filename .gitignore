@@ -3,3 +3,10 @@
 ################################################################################
 
 /FartherUnity/Library
+/FartherUnity/Logs
+/FartherUnity/obj/Debug
+/FartherUnity/Packages
+/FartherUnity/Temp
+*.csproj
+*.sln
+/FartherUnity/.vs/FartherUnity/v16
