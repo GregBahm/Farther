@@ -18,6 +18,7 @@ public class MainScript : MonoBehaviour
 
     public LayerMask CardsLayer;
     public LayerMask MapLayer;
+    private int cardCreationIndex;
 
     public static MainScript Instance { get; private set; }
 
@@ -36,10 +37,18 @@ public class MainScript : MonoBehaviour
 
     private void CreateSomeCards()
     {
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < 5; i++)
         {
-            Tray.AddCardToTray(CardType.Fire);
+            CreateCard();
         }
+    }
+
+    private void CreateCard()
+    {
+        CardType nextType = (CardType)cardCreationIndex;
+        Tray.AddCardToTray(nextType);
+        cardCreationIndex++;
+        cardCreationIndex %= Enum.GetValues(typeof(CardType)).Length;
     }
 
     private List<MapCellBehavior> CreateMapCells()
@@ -75,7 +84,7 @@ public class MainScript : MonoBehaviour
         if(GenerateCard)
         {
             GenerateCard = false;
-            Tray.AddCardToTray(CardType.Fire);
+            CreateCard();
         }
     }
 }

@@ -133,6 +133,7 @@ GameObject:
   - component: {fileID: 140054482}
   - component: {fileID: 140054484}
   - component: {fileID: 140054485}
+  - component: {fileID: 140054486}
   m_Layer: 0
   m_Name: MainScript
   m_TagString: Untagged
@@ -208,6 +209,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ecff21a797c34d45b64814cb11dcc96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &140054486
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 140054481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f03bae28f8e5c86489a6ac1043cc231d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CardArt:
+  - Type: 0
+    Name: Earth
+    Picture: {fileID: 2800000, guid: 5ae9eb279e2f22645be9023e9196ca4d, type: 3}
+  - Type: 3
+    Name: Cold
+    Picture: {fileID: 2800000, guid: 67599d6e9feaf1949ba259106a5b6198, type: 3}
+  - Type: 2
+    Name: Heat
+    Picture: {fileID: 2800000, guid: 47ee326e1b5b81e42856749aef22ee7b, type: 3}
+  - Type: 5
+    Name: People
+    Picture: {fileID: 2800000, guid: a9c27aff8cf09704483be766f3faa685, type: 3}
+  - Type: 4
+    Name: Plant
+    Picture: {fileID: 2800000, guid: dbcded55c6377ae4286ffae74096cd2c, type: 3}
+  - Type: 1
+    Name: Water
+    Picture: {fileID: 2800000, guid: fe98f2e3d43f24a42872ea868a12ecbc, type: 3}
+  - Type: 6
+    Name: Wealth
+    Picture: {fileID: 2800000, guid: c57c492161fb02c458694827f4770dfb, type: 3}
 --- !u!1 &585764782
 GameObject:
   m_ObjectHideFlags: 0

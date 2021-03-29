@@ -38,7 +38,7 @@ public class InteractionManager : MonoBehaviour
 
     private void DoDrop(MapCellBehavior dropTarget)
     {
-        dropTarget.Model.State.Apply(cardTray.DraggedCard.Model);
+        dropTarget.Apply(cardTray.DraggedCard.Model);
         cardTray.DraggedCard.State = CardBehaviorState.PoofingOutOfExistence;
         cardTray.RemoveCard(cardTray.DraggedCard);
     }
