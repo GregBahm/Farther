@@ -131,6 +131,8 @@ GameObject:
   m_Component:
   - component: {fileID: 140054483}
   - component: {fileID: 140054482}
+  - component: {fileID: 140054484}
+  - component: {fileID: 140054485}
   m_Layer: 0
   m_Name: MainScript
   m_TagString: Untagged
@@ -150,10 +152,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96f59d4e60be65a429d724f1a141f93e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  GenerateCard: 0
   Width: 20
   Height: 20
   TilePrefab: {fileID: 8609940853070482932, guid: c7dba8462f4d0a848b451d638aca8b46,
     type: 3}
+  Tray: {fileID: 140054484}
+  WorldmapTransform: {fileID: 585764783}
+  CardsLayer:
+    serializedVersion: 2
+    m_Bits: 256
+  MapLayer:
+    serializedVersion: 2
+    m_Bits: 512
 --- !u!4 &140054483
 Transform:
   m_ObjectHideFlags: 0
@@ -167,6 +178,65 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &140054484
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 140054481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8059bc5ab24a0c442a7bbbac5852a4af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TrayWidth: 20
+  MaxCardSpacing: 2
+  CardPrefab: {fileID: 3700232182761677531, guid: ec6715c6f030aeb4ca5e01e8766c4a60,
+    type: 3}
+  TrayTransform: {fileID: 2140823562}
+--- !u!114 &140054485
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 140054481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ecff21a797c34d45b64814cb11dcc96, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &585764782
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 585764783}
+  m_Layer: 9
+  m_Name: WorldmapTransform
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &585764783
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 585764782}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.19999999, y: 1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &705507993
 GameObject:
@@ -342,4 +412,34 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2140823561
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2140823562}
+  m_Layer: 8
+  m_Name: TrayTransform
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2140823562
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2140823561}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -9.5, z: -1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
