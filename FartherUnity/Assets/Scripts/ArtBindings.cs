@@ -10,6 +10,9 @@ public class ArtBindings : MonoBehaviour
     public CardArt[] CardArt;
     private Dictionary<CardType, CardArt> cardArtTable;
 
+    public MapTerrainArt[] MapTerrainArt;
+    private Dictionary<MapTerrainType, MapTerrainArt> terrainArtTable;
+
     private void Awake()
     {
         Instance = this;
@@ -18,6 +21,7 @@ public class ArtBindings : MonoBehaviour
     private void Start()
     {
         cardArtTable = CardArt.ToDictionary(item => item.Type, item => item);
+        terrainArtTable = MapTerrainArt.ToDictionary(item => item.Type, item => item);
     }
 
     public CardArt GetArtFor(CardType cardType)
@@ -27,9 +31,17 @@ public class ArtBindings : MonoBehaviour
 }
 
 [Serializable]
+public class MapTerrainArt
+{
+    public string Label;
+    public MapTerrainType Type;
+    public Texture2D Texture;
+}
+
+[Serializable]
 public class CardArt
 {
+    public string Label;
     public CardType Type;
-    public string Name;
-    public Texture2D Picture;
+    public Texture2D Texture;
 }

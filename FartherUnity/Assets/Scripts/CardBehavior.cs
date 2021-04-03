@@ -16,7 +16,7 @@ public class CardBehavior : MonoBehaviour
         this.tray = tray;
         Model = model;
         Material mat = GetComponent<MeshRenderer>().material;
-        Texture2D mainTex = ArtBindings.Instance.GetArtFor(model).Picture;
+        Texture2D mainTex = ArtBindings.Instance.GetArtFor(model).Texture;
         mat.SetTexture("_MainTex", mainTex);
     }
 

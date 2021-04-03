@@ -16,8 +16,7 @@ public class MapCellBehavior : MonoBehaviour
     internal void Apply(CardType model)
     {
         Model.State.Apply(model);
-        Texture2D tex = ArtBindings.Instance.GetArtFor(model).Picture;
+        Texture2D tex = ArtBindings.Instance.GetArtFor(model).Texture;
         mat.SetTexture("_MainTex", tex);
     }
 }
-
