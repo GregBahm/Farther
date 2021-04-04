@@ -9,14 +9,14 @@ public class WorldmapCell
     public int X { get; }
     public int Y { get; }
 
-    public WorldmapState State { get; }
+    public WorldmapState State { get; set;  }
 
     public WorldmapCell(int x, int y, Worldmap grid)
     {
         this.grid = grid;
         X = x;
         Y = y;
-        State = new WorldmapState(this);
+        State = new WorldmapState();
     }
 
     public void InitializeNeighbors(WorldmapCell[,] gridCells)
