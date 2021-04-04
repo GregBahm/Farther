@@ -1,4 +1,6 @@
-﻿public class RiverState
+﻿using System.Linq;
+
+public class RiverState
 {
     public bool Exists
     {

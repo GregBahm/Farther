@@ -11,3 +11,4 @@
 *.sln
 /FartherUnity/.vs/FartherUnity/v16
 /.vs
+*.vsconfig

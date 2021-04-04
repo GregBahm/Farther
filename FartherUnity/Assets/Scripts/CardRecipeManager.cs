@@ -53,4 +53,5 @@ public class PassiveRecipeManager
 
 public abstract class PassiveRecipe
 {
+    public abstract Dictionary<WorldmapCell, WorldmapState> GetModifiedCells(Worldmap worldMap);
 }
