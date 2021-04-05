@@ -222,27 +222,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CardArt:
-  - Type: 0
-    Name: Earth
-    Picture: {fileID: 2800000, guid: 5ae9eb279e2f22645be9023e9196ca4d, type: 3}
-  - Type: 3
-    Name: Cold
-    Picture: {fileID: 2800000, guid: 67599d6e9feaf1949ba259106a5b6198, type: 3}
-  - Type: 2
-    Name: Heat
-    Picture: {fileID: 2800000, guid: 47ee326e1b5b81e42856749aef22ee7b, type: 3}
-  - Type: 5
-    Name: People
-    Picture: {fileID: 2800000, guid: a9c27aff8cf09704483be766f3faa685, type: 3}
-  - Type: 4
-    Name: Plant
-    Picture: {fileID: 2800000, guid: dbcded55c6377ae4286ffae74096cd2c, type: 3}
-  - Type: 1
-    Name: Water
-    Picture: {fileID: 2800000, guid: fe98f2e3d43f24a42872ea868a12ecbc, type: 3}
-  - Type: 6
-    Name: Wealth
-    Picture: {fileID: 2800000, guid: c57c492161fb02c458694827f4770dfb, type: 3}
+  - Label: Earth
+    Type: 0
+    Texture: {fileID: 2800000, guid: 5ae9eb279e2f22645be9023e9196ca4d, type: 3}
+  - Label: Cold
+    Type: 3
+    Texture: {fileID: 2800000, guid: 67599d6e9feaf1949ba259106a5b6198, type: 3}
+  - Label: Heat
+    Type: 2
+    Texture: {fileID: 2800000, guid: 47ee326e1b5b81e42856749aef22ee7b, type: 3}
+  - Label: People
+    Type: 5
+    Texture: {fileID: 2800000, guid: a9c27aff8cf09704483be766f3faa685, type: 3}
+  - Label: Plant
+    Type: 4
+    Texture: {fileID: 2800000, guid: dbcded55c6377ae4286ffae74096cd2c, type: 3}
+  - Label: Water
+    Type: 1
+    Texture: {fileID: 2800000, guid: fe98f2e3d43f24a42872ea868a12ecbc, type: 3}
+  - Label: Wealth
+    Type: 6
+    Texture: {fileID: 2800000, guid: c57c492161fb02c458694827f4770dfb, type: 3}
+  MapTerrainArt: []
 --- !u!1 &585764782
 GameObject:
   m_ObjectHideFlags: 0
@@ -401,7 +402,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 1, g: 1, b: 1, a: 1}
+  m_BackGroundColor: {r: 0.735849, g: 0.735849, b: 0.735849, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0

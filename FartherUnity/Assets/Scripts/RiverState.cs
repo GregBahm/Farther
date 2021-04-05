@@ -27,4 +27,8 @@ public class RiverState
         this.connections = new bool[] { connectsUpRight, connectsRight, connectsDownRight, connectsDownLeft, connectsLeft, connectsUpLeft };
     }
 
+    public RiverStateBuilder ToBuilder()
+    {
+        return new RiverStateBuilder(this);
+    }
 }

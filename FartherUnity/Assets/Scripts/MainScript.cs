@@ -11,8 +11,8 @@ public class MainScript : MonoBehaviour
     public int Width;
     public int Height;
     public GameObject TilePrefab;
-    public ReadOnlyCollection<MapCellBehavior> MapCells { get; private set; }
-    private Worldmap map;
+    public ReadOnlyCollection<MapCellBehavior> MapCellBehaviors { get; private set; }
+    public Worldmap WorldMap { get; private set; }
     public CardsManager Tray;
     public Transform WorldmapTransform;
 
@@ -22,6 +22,9 @@ public class MainScript : MonoBehaviour
 
     public static MainScript Instance { get; private set; }
 
+    public CardRecipeManager CardRecipes { get; } = new CardRecipeManager();
+    public PassiveRecipeManager PassiveRecipes { get; } = new PassiveRecipeManager();
+
     private void Awake()
     {
         Instance = this;
@@ -29,9 +32,9 @@ public class MainScript : MonoBehaviour
 
     void Start()
     {
-        map = new Worldmap(Width, Height);
+        WorldMap = new Worldmap(Width, Height);
 
-        MapCells = CreateMapCells().AsReadOnly();
+        MapCellBehaviors = CreateMapCells().AsReadOnly();
         CreateSomeCards();
     }
 
@@ -72,11 +75,18 @@ public class MainScript : MonoBehaviour
         obj.transform.SetParent(WorldmapTransform);
         obj.name = x + " " + y;
         MapCellBehavior behavior = obj.GetComponent<MapCellBehavior>();
-        behavior.Model = map.Cells[x, y];
-        float xPos = x - ((float)Width / 2) + .5f;
-        float yPos = y - ((float)Height / 2) + .5f;
-        obj.transform.localPosition = new Vector3(xPos, yPos, 0);
+        behavior.Initialize(WorldMap[x, y]);
+
+        obj.transform.localPosition = GetCellPosition(x, y);
         return behavior;
+    }
+
+
+    private Vector3 GetCellPosition(int x, int y)
+    {
+        Vector2 ascendingOffset = Worldmap.AscendingTileOffset * y;
+        Vector2 offset = ascendingOffset + new Vector2(x, 0);
+        return new Vector3(offset.x, offset.y, 0);
     }
 
     private void Update()

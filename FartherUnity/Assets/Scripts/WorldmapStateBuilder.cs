@@ -10,7 +10,7 @@
         Terrain = sourceState.Terrain;
         Temperature = sourceState.Temperature;
         Hill = sourceState.Hill;
-
+        River = sourceState.River.ToBuilder();
     }
 
     public WorldmapState ToState()

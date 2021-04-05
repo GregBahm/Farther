@@ -1,6 +1,18 @@
 ﻿public class RiverStateBuilder
 {
     private readonly bool[] connections;
+
+    public RiverStateBuilder(RiverState riverState)
+    {
+        connections = new bool[] { 
+            riverState.ConnectsUpRight, 
+            riverState.ConnectsRight, 
+            riverState.ConnectsDownRight, 
+            riverState.ConnectsDownLeft, 
+            riverState.ConnectsLeft, 
+            riverState.ConnectsUpRight };
+    }
+
     public bool ConnectsUpRight { get { return connections[0]; } set { connections[0] = value; } }
     public bool ConnectsRight { get { return connections[1]; } set { connections[1] = value; } }
     public bool ConnectsDownRight { get { return connections[2]; } set { connections[2] = value; } }

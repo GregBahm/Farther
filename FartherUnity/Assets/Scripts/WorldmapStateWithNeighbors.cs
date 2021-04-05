@@ -3,9 +3,9 @@
 public class WorldmapStateWithNeighbors
 {
     public WorldmapState Center { get; }
-    public IEnumerable<WorldmapState> Neighbors { get; }
+    public Neighbors<WorldmapState> Neighbors { get; }
 
-    public WorldmapStateWithNeighbors(WorldmapState center, IEnumerable<WorldmapState> neighors)
+    public WorldmapStateWithNeighbors(WorldmapState center, Neighbors<WorldmapState> neighors)
     {
         Center = center;
         Neighbors = neighors;

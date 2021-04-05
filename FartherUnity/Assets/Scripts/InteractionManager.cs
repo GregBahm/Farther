@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 using static CardBehavior;
 
 public class InteractionManager : MonoBehaviour
@@ -38,9 +41,40 @@ public class InteractionManager : MonoBehaviour
 
     private void DoDrop(MapCellBehavior dropTarget)
     {
-        dropTarget.Apply(cardTray.DraggedCard.Model);
+        UpdateMapState(dropTarget, cardTray.DraggedCard.Model);
         cardTray.DraggedCard.State = CardBehaviorState.PoofingOutOfExistence;
         cardTray.RemoveCard(cardTray.DraggedCard);
+    }
+
+    private void UpdateMapState(MapCellBehavior dropTarget, CardType dropCard)
+    {
+        WorldmapStateWithNeighbors droptTargetState = dropTarget.Model.GetStateWithNeighbors();
+        CardDropRecipe cardDropRecipe = GetActiveCardDropRecipe(dropCard, droptTargetState);
+        if(cardDropRecipe != null)
+        {
+            WorldmapState newState = cardDropRecipe.ModifyState(droptTargetState);
+            dropTarget.Model.State = newState;
+            ApplyPassiveRecipes();
+        }
+    }
+
+    private CardDropRecipe GetActiveCardDropRecipe(CardType dropCard, WorldmapStateWithNeighbors droptTargetState)
+    {
+        return MainScript.Instance.CardRecipes
+            .Where(item => item.Card == dropCard)
+            .FirstOrDefault(item => item.CanModifyState(droptTargetState));
+    }
+
+    private void ApplyPassiveRecipes()
+    {
+        foreach (PassiveRecipe recipe in MainScript.Instance.PassiveRecipes)
+        {
+            Dictionary<WorldmapCell, WorldmapState> modifications = recipe.GetModifiedCells(MainScript.Instance.WorldMap);
+            foreach (KeyValuePair<WorldmapCell, WorldmapState> entry in modifications)
+            {
+                entry.Key.State = entry.Value;
+            }
+        }
     }
 
     private MapCellBehavior GetDropTarget()
