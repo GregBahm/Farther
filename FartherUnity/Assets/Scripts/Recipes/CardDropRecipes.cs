@@ -253,7 +253,7 @@ namespace CardDropRecipes
                 MapTerrainType.Tundra,
             };
 
-        public override CardType Card => CardType.Water;
+        public override CardType Card => CardType.Earth;
 
         public override bool CanModifyState(WorldmapStateWithNeighbors state)
         {

@@ -27,11 +27,12 @@ public class InteractionManager : MonoBehaviour
         if(!Input.GetMouseButton(0))
         {
             MapCellBehavior dropTarget = GetDropTarget();
+            bool dropped = false;
             if(dropTarget != null)
             {
-                DoDrop(dropTarget);
+                dropped = TryDrop(dropTarget);
             }
-            else
+            if(!dropped)
             {
                 cardTray.DraggedCard.State = CardBehavior.CardBehaviorState.Idle;
             }
@@ -39,23 +40,27 @@ public class InteractionManager : MonoBehaviour
         }
     }
 
-    private void DoDrop(MapCellBehavior dropTarget)
+    private bool TryDrop(MapCellBehavior dropTarget)
     {
-        UpdateMapState(dropTarget, cardTray.DraggedCard.Model);
-        cardTray.DraggedCard.State = CardBehaviorState.PoofingOutOfExistence;
-        cardTray.RemoveCard(cardTray.DraggedCard);
-    }
-
-    private void UpdateMapState(MapCellBehavior dropTarget, CardType dropCard)
-    {
-        WorldmapStateWithNeighbors droptTargetState = dropTarget.Model.GetStateWithNeighbors();
-        CardDropRecipe cardDropRecipe = GetActiveCardDropRecipe(dropCard, droptTargetState);
+        WorldmapStateWithNeighbors dropTargetState = dropTarget.Model.GetStateWithNeighbors();
+        CardDropRecipe cardDropRecipe = GetActiveCardDropRecipe(cardTray.DraggedCard.Model, dropTargetState);
         if(cardDropRecipe != null)
         {
-            WorldmapState newState = cardDropRecipe.ModifyState(droptTargetState);
-            dropTarget.Model.State = newState;
-            ApplyPassiveRecipes();
+            UpdateMapState(dropTarget, dropTargetState, cardDropRecipe);
+
+            cardTray.AddCardToTray(cardTray.DraggedCard.Model); // For debugging
+            cardTray.DraggedCard.State = CardBehaviorState.PoofingOutOfExistence;
+            cardTray.RemoveCard(cardTray.DraggedCard);
+            return true;
         }
+        return false;
+    }
+
+    private void UpdateMapState(MapCellBehavior dropTarget, WorldmapStateWithNeighbors dropTargetState, CardDropRecipe cardDropRecipe)
+    {
+        WorldmapState newState = cardDropRecipe.ModifyState(dropTargetState);
+        dropTarget.Model.State = newState;
+        ApplyPassiveRecipes();
     }
 
     private CardDropRecipe GetActiveCardDropRecipe(CardType dropCard, WorldmapStateWithNeighbors droptTargetState)
@@ -83,7 +88,7 @@ public class InteractionManager : MonoBehaviour
         RaycastHit hitInfo;
         if (Physics.Raycast(mouseRay, out hitInfo, float.MaxValue, MainScript.Instance.MapLayer))
         {
-            return hitInfo.collider.gameObject.GetComponent<MapCellBehavior>();
+            return hitInfo.collider.transform.parent.gameObject.GetComponent<MapCellBehavior>();
         }
         return null;
     }

@@ -244,12 +244,54 @@ MonoBehaviour:
     Type: 6
     Texture: {fileID: 2800000, guid: c57c492161fb02c458694827f4770dfb, type: 3}
   MapTerrainArt:
-  - Label: Plains
+  - Label: Coast
     Type: 1
+    Texture: {fileID: 2800000, guid: cc3b28cd64a65b34fb8e09638140731c, type: 3}
+  - Label: Desert
+    Type: 2
+    Texture: {fileID: 2800000, guid: d528d528e1ad65040b437c8a766b1fb7, type: 3}
+  - Label: Forest
+    Type: 3
+    Texture: {fileID: 2800000, guid: 8c178782c4d38974983a65fe2ed5da1e, type: 3}
+  - Label: Grassland
+    Type: 4
+    Texture: {fileID: 2800000, guid: f514076a114f79d42b6c440bab455e72, type: 3}
+  - Label: HighestPeak
+    Type: 5
+    Texture: {fileID: 2800000, guid: 78b09daca9e90294f90f9afc51ce068a, type: 3}
+  - Label: Jungle
+    Type: 6
+    Texture: {fileID: 2800000, guid: fabeb0a6411fb7449876f0bc7998e13d, type: 3}
+  - Label: Lake
+    Type: 7
+    Texture: {fileID: 2800000, guid: fd09c8235d2a1294bb1f37d1e6d6b47f, type: 3}
+  - Label: Mountain
+    Type: 8
+    Texture: {fileID: 2800000, guid: 5058e11983e30f847b27b8cb7be631ee, type: 3}
+  - Label: Oasis
+    Type: 9
+    Texture: {fileID: 2800000, guid: 1cc16a4f071b4ba4bbb6047df8697729, type: 3}
+  - Label: Plains
+    Type: 10
     Texture: {fileID: 2800000, guid: 0a0936a9f7514ad4e8d0761f153cf8a9, type: 3}
+  - Label: Savannah
+    Type: 11
+    Texture: {fileID: 2800000, guid: c090e7bd1121cd440a74d69ea3fb3730, type: 3}
+  - Label: Sea
+    Type: 12
+    Texture: {fileID: 2800000, guid: 8b6c4a09592fad04bb1e7e8866bb9c18, type: 3}
+  - Label: Swamp
+    Type: 13
+    Texture: {fileID: 2800000, guid: bded78520d24e29418f592e373f9aad9, type: 3}
+  - Label: Tundra
+    Type: 14
+    Texture: {fileID: 2800000, guid: e2959f21304e6aa448c4a0b4f4dfccbe, type: 3}
   - Label: Void
     Type: 0
     Texture: {fileID: 2800000, guid: 592706272d4903444833d6d335f2f8bb, type: 3}
+  - Label: Wetland
+    Type: 15
+    Texture: {fileID: 2800000, guid: 82af79a3b4f46e244b8aa754810589b2, type: 3}
 --- !u!1 &585764782
 GameObject:
   m_ObjectHideFlags: 0
