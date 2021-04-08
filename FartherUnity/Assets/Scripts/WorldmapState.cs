@@ -7,18 +7,18 @@ public class WorldmapState
     public MapTerrainType Terrain { get; }
     public int Temperature { get; }
     public bool Hill { get; }
-    public RiverState River { get; }
+    public bool River { get; }
 
     public WorldmapState(
         MapTerrainType terrain = default,
         int temperature = 0,
         bool hill = false, 
-        RiverState river = null)
+        bool river = false)
     {
         Terrain = terrain;
         Temperature = temperature;
         Hill = hill;
-        River = river ?? new RiverState();
+        River = river;
     }
     
     public WorldmapStateBuilder ToBuilder()

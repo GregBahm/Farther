@@ -65,6 +65,7 @@ public class MainScript : MonoBehaviour
                 ret.Add(obj);
             }
         }
+
         return ret;
     }
 
@@ -72,7 +73,7 @@ public class MainScript : MonoBehaviour
     {
         GameObject obj = Instantiate(TilePrefab);
         obj.layer = WorldmapTransform.gameObject.layer;
-        obj.transform.SetParent(WorldmapTransform);
+        obj.transform.SetParent(WorldmapTransform, false);
         obj.name = x + " " + y;
         MapCellBehavior behavior = obj.GetComponent<MapCellBehavior>();
         behavior.Initialize(WorldMap[x, y]);

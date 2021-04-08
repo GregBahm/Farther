@@ -11,7 +11,7 @@ public class MapCellBehavior : MonoBehaviour
 
     private void Start()
     {
-        mat = GetComponent<MeshRenderer>().material;
+        mat = GetComponentInChildren<MeshRenderer>().material;
     }
 
     public void Initialize(WorldmapCell model)
@@ -36,9 +36,7 @@ public class MapCellBehavior : MonoBehaviour
 
     internal void UpdateVisuals()
     {
-        // TODO: UpdateVisuals in MapCellBehavior
-
-        //Texture2D tex = ArtBindings.Instance.GetArtFor(Model.State).Texture;
-        //mat.SetTexture("_MainTex", tex);
+        TileArt art = ArtBindings.Instance.GetArtFor(Model);
+        mat.SetTexture("_MainTex", art.Terrain);
     }
 }

@@ -14,5 +14,6 @@
     Mountain,
     Oasis,
     Swamp,
-    Wetland
+    Wetland,
+    HighestPeak,
 }

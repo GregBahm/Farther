@@ -28,6 +28,23 @@ public class ArtBindings : MonoBehaviour
     {
         return cardArtTable[cardType];
     }
+
+    public TileArt GetArtFor(WorldmapCell cell)
+    {
+        Texture2D terrain = terrainArtTable[cell.State.Terrain].Texture;
+        return new TileArt(terrain);
+    }
+}
+
+public class TileArt
+{
+    public Texture2D Terrain { get; }
+    // TODO: Rivers, hills, etc
+
+    public TileArt(Texture2D terrain)
+    {
+        Terrain = terrain;
+    }
 }
 
 [Serializable]
