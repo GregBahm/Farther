@@ -8,62 +8,33 @@ using UnityEngine;
 public class Worldmap : IEnumerable<WorldmapCell>
 {
     public static Vector2 AscendingTileOffset { get; } = new Vector2(1, -1.73f).normalized;
-    private readonly HashSet<WorldmapCell> hash;
-    private readonly WorldmapCell[,] cells;
+    private readonly Dictionary<string, WorldmapCell> cells = new Dictionary<string, WorldmapCell>();
 
-    public int Width { get; }
-    public int Height { get; }
-
-    public WorldmapCell this[int x, int y]
+    public WorldmapCell AddCell(int x, int y)
     {
-        get
-        {
-            return cells[x, y];
-        }
+        WorldmapCell newCell = new WorldmapCell(x, y, this);
+        cells.Add(newCell.MapKey, newCell);
+        return newCell;
     }
 
-    public Worldmap(int width,
-        int height)
+    public WorldmapCell TryGetCellAt(string cellKey)
     {
-        Width = width;
-        Height = height;
-        cells = Initialize();
-        hash = CreateHash();
+        if (cells.ContainsKey(cellKey))
+        {
+            return cells[cellKey];
+        }
+        return null;
     }
 
-    private HashSet<WorldmapCell> CreateHash()
+    public WorldmapCell TryGetCellAt(int x, int y)
     {
-        HashSet<WorldmapCell> ret = new HashSet<WorldmapCell>();
-        foreach (var item in cells)
-        {
-            ret.Add(item);
-        }
-        return ret;
-    }
-
-    private WorldmapCell[,] Initialize()
-    {
-        WorldmapCell[,] ret = new WorldmapCell[Width, Height];
-        for (int x = 0; x < Width; x++)
-        {
-            for (int y = 0; y < Height; y++)
-            {
-                ret[x, y] = new WorldmapCell(x, y);
-            }
-        }
-        for (int x = 0; x < Width; x++)
-        {
-            for (int y = 0; y < Height; y++)
-            {
-                ret[x, y].InitializeNeighbors(ret);
-            }
-        }
-        return ret;
+        string cellKey = WorldmapCell.GetCellKey(x, y);
+        return TryGetCellAt(cellKey);
     }
 
     public IEnumerator<WorldmapCell> GetEnumerator()
     {
-        return hash.GetEnumerator();
+        return cells.Values.GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()

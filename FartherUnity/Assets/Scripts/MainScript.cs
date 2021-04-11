@@ -8,11 +8,9 @@ public class MainScript : MonoBehaviour
 {
     public bool GenerateCard;
 
-    public int Width;
-    public int Height;
     public GameObject TilePrefab;
-    public ReadOnlyCollection<MapCellBehavior> MapCellBehaviors { get; private set; }
-    public Worldmap WorldMap { get; private set; }
+    private readonly List<MapCellBehavior> mapCellBehaviors = new List<MapCellBehavior>();
+    public Worldmap WorldMap { get; } = new Worldmap();
     public CardsManager Tray;
     public Transform WorldmapTransform;
 
@@ -32,10 +30,26 @@ public class MainScript : MonoBehaviour
 
     void Start()
     {
-        WorldMap = new Worldmap(Width, Height);
-
-        MapCellBehaviors = CreateMapCells().AsReadOnly();
+        EnsureCellAndNeighborsExist(0, 0);
         CreateSomeCards();
+    }
+
+    public void EnsureCellAndNeighborsExist(int x, int y)
+    {
+        CreateIfNotExistant(x, y);
+        foreach (NeighborOffset offset in NeighborOffset.Offsets)
+        {
+            CreateIfNotExistant(x + offset.X, y + offset.Y);
+        }
+
+    }
+
+    private void CreateIfNotExistant(int x, int y)
+    {
+        if(WorldMap.TryGetCellAt(x, y) == null)
+        {
+            CreateInteractionTile(x, y);
+        }
     }
 
     private void CreateSomeCards()
@@ -54,29 +68,15 @@ public class MainScript : MonoBehaviour
         cardCreationIndex %= Enum.GetValues(typeof(CardType)).Length;
     }
 
-    private List<MapCellBehavior> CreateMapCells()
-    {
-        List<MapCellBehavior> ret = new List<MapCellBehavior>();
-        for (int x = 0; x < Width; x++)
-        {
-            for (int y = 0; y < Height; y++)
-            {
-                MapCellBehavior obj = CreateInteractionTile(x, y);
-                ret.Add(obj);
-            }
-        }
-
-        return ret;
-    }
-
     private MapCellBehavior CreateInteractionTile(int x, int y)
     {
+        WorldmapCell cell = WorldMap.AddCell(x, y);
         GameObject obj = Instantiate(TilePrefab);
         obj.layer = WorldmapTransform.gameObject.layer;
         obj.transform.SetParent(WorldmapTransform, false);
         obj.name = x + " " + y;
         MapCellBehavior behavior = obj.GetComponent<MapCellBehavior>();
-        behavior.Initialize(WorldMap[x, y]);
+        behavior.Initialize(cell);
 
         obj.transform.localPosition = GetCellPosition(x, y);
         return behavior;

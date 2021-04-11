@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 public class Neighbors<T> : IEnumerable<T>
 {
@@ -37,5 +38,27 @@ public class Neighbors<T> : IEnumerable<T>
     IEnumerator IEnumerable.GetEnumerator()
     {
         return GetEnumerator();
+    }
+}
+
+public struct NeighborOffset
+{
+    public static ReadOnlyCollection<NeighborOffset> Offsets { get; } = new List<NeighborOffset>()
+    {
+        new NeighborOffset(0, -1),
+        new NeighborOffset(-1, 0),
+        new NeighborOffset(-1, 1),
+        new NeighborOffset(0, 1),
+        new NeighborOffset(1, 0),
+        new NeighborOffset(1, -1),
+    }.AsReadOnly();
+
+    public int X { get; }
+    public int Y { get; }
+
+    public NeighborOffset(int x, int y)
+    {
+        X = x;
+        Y = y;
     }
 }

@@ -46,6 +46,7 @@ public class InteractionManager : MonoBehaviour
         CardDropRecipe cardDropRecipe = GetActiveCardDropRecipe(cardTray.DraggedCard.Model, dropTargetState);
         if(cardDropRecipe != null)
         {
+            MainScript.Instance.EnsureCellAndNeighborsExist(dropTarget.Model.X, dropTarget.Model.Y);
             UpdateMapState(dropTarget, dropTargetState, cardDropRecipe);
 
             cardTray.AddCardToTray(cardTray.DraggedCard.Model); // For debugging
