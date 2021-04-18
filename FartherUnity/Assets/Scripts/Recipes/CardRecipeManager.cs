@@ -28,17 +28,11 @@ public class CardRecipeManager : IEnumerable<CardDropRecipe>
     private IEnumerable<CardDropRecipe> GetRecipes()
     {
         yield return new EarthOnVoidToPlains();
-        yield return new PlantsOnPlainsToGrassland();
-        yield return new PlantsOnGrasslandToForest();
-        yield return new WaterOnForestToSwamp();
-        yield return new WaterOnPlainsToWetland();
-        yield return new ColdOnPlainsToTundra();
-        yield return new ColdOnGrasslandToColdGrassland();
-        yield return new ColdOnForestToColdForest();
-        yield return new HeatOnPlainsToDesert();
-        yield return new HeatOnGrasslandsToSavanah();
-        yield return new HeatOnForestToJungle();
-        yield return new WaterOnVoidToSea();
+        yield return new GreeneryOnPlainsToGrassland();
+        yield return new GreeneryOnGrasslandToForest();
+        yield return new FloodOnForestToSwamp();
+        yield return new FloodOnPlainsToWetland();
+        yield return new FloodOnVoidToSea();
         yield return new EarthOnLandToHills();
         yield return new EarthOnHillsToMountain();
     }

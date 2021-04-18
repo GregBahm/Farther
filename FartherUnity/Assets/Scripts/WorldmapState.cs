@@ -9,16 +9,20 @@ public class WorldmapState
     public bool Hill { get; }
     public bool River { get; }
 
+    public SiteType SiteType { get; }
+
     public WorldmapState(
         MapTerrainType terrain = default,
         int temperature = 0,
         bool hill = false, 
-        bool river = false)
+        bool river = false,
+        SiteType siteType = SiteType.None)
     {
         Terrain = terrain;
         Temperature = temperature;
         Hill = hill;
         River = river;
+        SiteType = siteType;
     }
     
     public WorldmapStateBuilder ToBuilder()
@@ -27,3 +31,22 @@ public class WorldmapState
     }
 }
 
+public abstract class SiteState
+{
+    // Update method
+}
+
+public enum SiteType
+{
+    None = 0,
+    DragonLair,
+    ForestVillage,
+    MagicalBathouse,
+    City
+}
+
+public class WorldmapState<TSiteState> where TSiteState : SiteState
+{
+    public SiteType Type { get; }
+    public TSiteState SiteState { get; }
+}

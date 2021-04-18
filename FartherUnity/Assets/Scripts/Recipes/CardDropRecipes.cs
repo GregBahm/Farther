@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEditorInternal;
 
 namespace CardDropRecipes
 {
@@ -18,52 +19,67 @@ namespace CardDropRecipes
         public override WorldmapState ModifyState(WorldmapStateWithNeighbors sourceState)
         {
             WorldmapStateBuilder output = sourceState.Center.ToBuilder();
-            output.Terrain = MapTerrainType.Plains;
+
+            if(sourceState.Center.Temperature < 0)
+                output.Terrain = MapTerrainType.Tundra;
+            else if(sourceState.Center.Temperature > 0)
+                output.Terrain = MapTerrainType.Desert;
+            else
+                output.Terrain = MapTerrainType.Plains;
+
             return output.ToState();
         }
     }
 
-    public class PlantsOnPlainsToGrassland : CardDropRecipe
+    public class GreeneryOnPlainsToGrassland : CardDropRecipe
     {
-        public override CardType Card => CardType.Plant;
+        public override CardType Card => CardType.Greenery;
 
         public override bool CanModifyState(WorldmapStateWithNeighbors state)
         {
-            return state.Center.Terrain == MapTerrainType.Plains;
+            return state.Center.Terrain == MapTerrainType.Plains
+                || state.Center.Terrain == MapTerrainType.Desert;
         }
 
         public override WorldmapState ModifyState(WorldmapStateWithNeighbors sourceState)
         {
             WorldmapStateBuilder output = sourceState.Center.ToBuilder();
 
-            output.Terrain = MapTerrainType.Grassland;
+            if (sourceState.Center.Terrain > 0)
+                output.Terrain = MapTerrainType.Savannah;
+            else
+                output.Terrain = MapTerrainType.Grassland;
 
             return output.ToState();
         }
     }
 
-    public class PlantsOnGrasslandToForest : CardDropRecipe
+    public class GreeneryOnGrasslandToForest : CardDropRecipe
     {
-        public override CardType Card => CardType.Plant;
+        public override CardType Card => CardType.Greenery;
 
         public override bool CanModifyState(WorldmapStateWithNeighbors state)
         {
-            return state.Center.Terrain == MapTerrainType.Grassland;
+            return state.Center.Terrain == MapTerrainType.Grassland
+                || state.Center.Terrain == MapTerrainType.Savannah;
         }
 
         public override WorldmapState ModifyState(WorldmapStateWithNeighbors sourceState)
         {
             WorldmapStateBuilder output = sourceState.Center.ToBuilder();
 
-            output.Terrain = MapTerrainType.Forest;
+            if (sourceState.Center.Temperature > 0)
+                output.Terrain = MapTerrainType.Jungle;
+            else
+                output.Terrain = MapTerrainType.Forest;
 
             return output.ToState();
         }
     }
 
-    public class WaterOnForestToSwamp : CardDropRecipe
+    public class FloodOnForestToSwamp : CardDropRecipe
     {
-        public override CardType Card => CardType.Water;
+        public override CardType Card => CardType.Flood;
 
         public override bool CanModifyState(WorldmapStateWithNeighbors state)
         {
@@ -79,9 +95,10 @@ namespace CardDropRecipes
             return output.ToState();
         }
     }
-    public class WaterOnPlainsToWetland : CardDropRecipe
+
+    public class FloodOnPlainsToWetland : CardDropRecipe
     {
-        public override CardType Card => CardType.Water;
+        public override CardType Card => CardType.Flood;
 
         public override bool CanModifyState(WorldmapStateWithNeighbors state)
         {
@@ -98,133 +115,9 @@ namespace CardDropRecipes
         }
     }
 
-    public class ColdOnPlainsToTundra : CardDropRecipe
+    public class FloodOnVoidToSea : CardDropRecipe
     {
-        public override CardType Card => CardType.Cold;
-
-        public override bool CanModifyState(WorldmapStateWithNeighbors state)
-        {
-            return state.Center.Terrain == MapTerrainType.Plains
-                && state.Neighbors.All(item => item?.Temperature <= 0);
-        }
-
-        public override WorldmapState ModifyState(WorldmapStateWithNeighbors sourceState)
-        {
-            WorldmapStateBuilder output = sourceState.Center.ToBuilder();
-
-            output.Terrain = MapTerrainType.Tundra;
-            output.Temperature = -1;
-
-            return output.ToState();
-        }
-    }
-    public class ColdOnGrasslandToColdGrassland : CardDropRecipe
-    {
-        public override CardType Card => CardType.Cold;
-
-        public override bool CanModifyState(WorldmapStateWithNeighbors state)
-        {
-            return state.Center.Terrain == MapTerrainType.Grassland
-                && state.Center.Temperature >= 0
-                && state.Neighbors.All(item => item?.Temperature <= 0);
-        }
-
-        public override WorldmapState ModifyState(WorldmapStateWithNeighbors sourceState)
-        {
-            WorldmapStateBuilder output = sourceState.Center.ToBuilder();
-
-            output.Temperature = -1;
-
-            return output.ToState();
-        }
-    }
-
-    public class ColdOnForestToColdForest : CardDropRecipe
-    {
-        public override CardType Card => CardType.Cold;
-
-        public override bool CanModifyState(WorldmapStateWithNeighbors state)
-        {
-            return state.Center.Terrain == MapTerrainType.Forest
-                && state.Center.Temperature >= 0
-                && state.Neighbors.All(item => item?.Temperature <= 0);
-        }
-
-        public override WorldmapState ModifyState(WorldmapStateWithNeighbors sourceState)
-        {
-            WorldmapStateBuilder output = sourceState.Center.ToBuilder();
-
-            output.Temperature = -1;
-
-            return output.ToState();
-        }
-    }
-
-    public class HeatOnPlainsToDesert : CardDropRecipe
-    {
-        public override CardType Card => CardType.Heat;
-
-        public override bool CanModifyState(WorldmapStateWithNeighbors state)
-        {
-            return state.Center.Terrain == MapTerrainType.Plains
-                && state.Neighbors.All(item => item?.Temperature >= 0);
-        }
-
-        public override WorldmapState ModifyState(WorldmapStateWithNeighbors sourceState)
-        {
-            WorldmapStateBuilder output = sourceState.Center.ToBuilder();
-
-            output.Temperature = 1;
-            output.Terrain = MapTerrainType.Desert;
-
-            return output.ToState();
-        }
-    }
-
-    public class HeatOnGrasslandsToSavanah : CardDropRecipe
-    {
-        public override CardType Card => CardType.Heat;
-
-        public override bool CanModifyState(WorldmapStateWithNeighbors state)
-        {
-            return state.Center.Terrain == MapTerrainType.Grassland
-                && state.Neighbors.All(item => item?.Temperature >= 0);
-        }
-
-        public override WorldmapState ModifyState(WorldmapStateWithNeighbors sourceState)
-        {
-            WorldmapStateBuilder output = sourceState.Center.ToBuilder();
-
-            output.Temperature = 1;
-            output.Terrain = MapTerrainType.Savannah;
-
-            return output.ToState();
-        }
-    }
-
-    public class HeatOnForestToJungle : CardDropRecipe
-    {
-        public override CardType Card => CardType.Heat;
-
-        public override bool CanModifyState(WorldmapStateWithNeighbors state)
-        {
-            return state.Center.Terrain == MapTerrainType.Forest
-                && state.Neighbors.All(item => item?.Temperature >= 0);
-        }
-
-        public override WorldmapState ModifyState(WorldmapStateWithNeighbors sourceState)
-        {
-            WorldmapStateBuilder output = sourceState.Center.ToBuilder();
-
-            output.Temperature = 1;
-            output.Terrain = MapTerrainType.Jungle;
-
-            return output.ToState();
-        }
-    }
-    public class WaterOnVoidToSea : CardDropRecipe
-    {
-        public override CardType Card => CardType.Water;
+        public override CardType Card => CardType.Flood;
 
         public override bool CanModifyState(WorldmapStateWithNeighbors state)
         {
