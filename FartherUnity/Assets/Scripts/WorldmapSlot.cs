@@ -6,15 +6,15 @@ using System.Dynamic;
 using System.Linq;
 using UnityEngine.EventSystems;
 
-public class WorldmapCell
+public class WorldmapSlot
 {
     private readonly Worldmap worldmap;
     public Neighbors<string> NeighborsLookup { get; }
-    public IEnumerable<WorldmapCell> Neighbors
+    public IEnumerable<WorldmapSlot> Neighbors
     {
         get
         {
-            return NeighborsLookup.Select(item => worldmap.TryGetCellAt(item))
+            return NeighborsLookup.Select(item => worldmap.TryGetSlotAt(item))
                 .Where(item => item != null);
         }
     }
@@ -31,7 +31,15 @@ public class WorldmapCell
         {
             if(state != value)
             {
+                if(state != null)
+                {
+                    state.OnRemovedFromMap();
+                }
                 state = value;
+                if(state != null)
+                {
+                    state.OnAddedToMap(this);
+                }
                 StateChanged?.Invoke(this, EventArgs.Empty);
             }
         }
@@ -39,47 +47,47 @@ public class WorldmapCell
 
     public event EventHandler StateChanged;
 
-    public WorldmapCell(int x, int y, Worldmap worldmap)
+    public WorldmapSlot(int x, int y, Worldmap worldmap)
     {
         X = x;
         Y = y;
         State = new WorldmapState();
         this.worldmap = worldmap;
-        MapKey = GetCellKey(x, y);
+        MapKey = GetSlotKey(x, y);
         NeighborsLookup = GetNeighborsLookup();
     }
 
     private Neighbors<string> GetNeighborsLookup()
     {
         return new Neighbors<string>(
-            GetCellKey(NeighborOffset.Offsets[0]),
-            GetCellKey(NeighborOffset.Offsets[1]),
-            GetCellKey(NeighborOffset.Offsets[2]),
-            GetCellKey(NeighborOffset.Offsets[3]),
-            GetCellKey(NeighborOffset.Offsets[4]),
-            GetCellKey(NeighborOffset.Offsets[5])
+            GetSlotKey(NeighborOffset.Offsets[0]),
+            GetSlotKey(NeighborOffset.Offsets[1]),
+            GetSlotKey(NeighborOffset.Offsets[2]),
+            GetSlotKey(NeighborOffset.Offsets[3]),
+            GetSlotKey(NeighborOffset.Offsets[4]),
+            GetSlotKey(NeighborOffset.Offsets[5])
         );
     }
 
     internal WorldmapStateWithNeighbors GetStateWithNeighbors()
     {
         Neighbors<WorldmapState> neighbors = new Neighbors<WorldmapState>(
-            worldmap.TryGetCellAt(NeighborsLookup.UpRight)?.State,
-            worldmap.TryGetCellAt(NeighborsLookup.Right)?.State,
-            worldmap.TryGetCellAt(NeighborsLookup.DownRight)?.State,
-            worldmap.TryGetCellAt(NeighborsLookup.DownLeft)?.State,
-            worldmap.TryGetCellAt(NeighborsLookup.Left)?.State,
-            worldmap.TryGetCellAt(NeighborsLookup.UpLeft)?.State);
+            worldmap.TryGetSlotAt(NeighborsLookup.UpRight)?.State,
+            worldmap.TryGetSlotAt(NeighborsLookup.Right)?.State,
+            worldmap.TryGetSlotAt(NeighborsLookup.DownRight)?.State,
+            worldmap.TryGetSlotAt(NeighborsLookup.DownLeft)?.State,
+            worldmap.TryGetSlotAt(NeighborsLookup.Left)?.State,
+            worldmap.TryGetSlotAt(NeighborsLookup.UpLeft)?.State);
         return new WorldmapStateWithNeighbors(State,
             neighbors);
     }
 
-    private string GetCellKey(NeighborOffset offset)
+    private string GetSlotKey(NeighborOffset offset)
     {
-        return GetCellKey(offset.X + X, offset.Y + Y);
+        return GetSlotKey(offset.X + X, offset.Y + Y);
     }
 
-    public static string GetCellKey(int x, int y)
+    public static string GetSlotKey(int x, int y)
     {
         return x + " " + y;
     }

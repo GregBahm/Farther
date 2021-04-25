@@ -1,52 +1,73 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
+using System.Linq;
 
-public class WorldmapState
+public abstract class WorldmapState
 {
-    public MapTerrainType Terrain { get; }
-    public int Temperature { get; }
-    public bool Hill { get; }
-    public bool River { get; }
+    public TerrainState Terrain { get; }
 
     public SiteType SiteType { get; }
 
-    public WorldmapState(
-        MapTerrainType terrain = default,
-        int temperature = 0,
-        bool hill = false, 
-        bool river = false,
-        SiteType siteType = SiteType.None)
+    protected delegate StateChangeResult DropRecipe(Card card);
+
+    protected delegate StateChangeResult PassiveRecipe();
+
+    // Recipes that trigger when a card is dropped on the worldmap slot
+    protected readonly IEnumerable<DropRecipe> dropRecipes;
+
+    // Recipes that trigger when the state of a neighboring slot changes
+    protected readonly IEnumerable<PassiveRecipe> onNeighborChangeRecipes;
+
+    public WorldmapState(TerrainState terrain,
+        SiteType siteType)
     {
         Terrain = terrain;
-        Temperature = temperature;
-        Hill = hill;
-        River = river;
         SiteType = siteType;
+        dropRecipes = GetDropRecipes().ToArray();
+        onNeighborChangeRecipes = GetOnNeighborChangeRecipes().ToArray();
     }
-    
-    public WorldmapStateBuilder ToBuilder()
+
+    public bool CanDropCardOnTile(Card card)
     {
-        return new WorldmapStateBuilder(this);
+        return dropRecipes.Any(item => item(card).StateCanChange);
+    }
+
+    protected abstract IEnumerable<DropRecipe> GetDropRecipes();
+
+    protected abstract IEnumerable<PassiveRecipe> GetOnNeighborChangeRecipes();
+
+    public WorldmapState GetFromDrop(Card card)
+    {
+        foreach (var item in dropRecipes)
+        {
+            StateChangeResult result = item(card);
+            if (result.StateCanChange)
+            {
+                return result.NewState;
+            }
+        }
+        throw new InvalidOperationException("Can't GetFromDrop when no recipes can drop.");
+    }
+
+
+    internal void OnRemovedFromMap()
+    {
+        // How do I remove these? Is this even correct? 
+    }
+
+    internal void OnAddedToMap(WorldmapSlot slot)
+    {
+        // TODO: Figure this out when I can iterate
+
+        //foreach (var neighbor in slot.Neighbors)
+        //{
+        //    foreach (var neighborRecipe in onNeighborChangeRecipes)
+        //    {
+        //        neighbor.StateChanged += (sender, e) => neighborRecipe();
+        //    }
+        //}
     }
 }
 
-public abstract class SiteState
-{
-    // Update method
-}
-
-public enum SiteType
-{
-    None = 0,
-    DragonLair,
-    ForestVillage,
-    MagicalBathouse,
-    City
-}
-
-public class WorldmapState<TSiteState> where TSiteState : SiteState
-{
-    public SiteType Type { get; }
-    public TSiteState SiteState { get; }
-}

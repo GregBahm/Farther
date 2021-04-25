@@ -2,7 +2,7 @@
 
 public abstract class PassiveRecipe
 {
-    public abstract Dictionary<WorldmapCell, WorldmapState> GetModifiedCells(Worldmap worldMap);
+    public abstract Dictionary<WorldmapSlot, WorldmapState> GetModifiedCells(Worldmap worldMap);
 
 
     private static readonly HashSet<MapTerrainType> waterTypes = new HashSet<MapTerrainType>()

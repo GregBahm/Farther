@@ -9,11 +9,11 @@ namespace PassiveRecipes
 {
     public class TallestMountainRecipe : PassiveRecipe
     {
-        public override Dictionary<WorldmapCell, WorldmapState> GetModifiedCells(Worldmap worldMap)
+        public override Dictionary<WorldmapSlot, WorldmapState> GetModifiedCells(Worldmap worldMap)
         {
-            Dictionary<WorldmapCell, WorldmapState> ret = new Dictionary<WorldmapCell, WorldmapState>();
-            IEnumerable<WorldmapCell> mountains = worldMap.Where(item => item.State.Terrain == MapTerrainType.Mountain);
-            foreach(WorldmapCell mountainCell in mountains)
+            Dictionary<WorldmapSlot, WorldmapState> ret = new Dictionary<WorldmapSlot, WorldmapState>();
+            IEnumerable<WorldmapSlot> mountains = worldMap.Where(item => item.State.Terrain == MapTerrainType.Mountain);
+            foreach(WorldmapSlot mountainCell in mountains)
             {
                 if(mountainCell.Neighbors.All(item => item?.State.Terrain == MapTerrainType.Mountain))
                 {
@@ -34,11 +34,11 @@ namespace PassiveRecipes
     public class RiverRecipe : PassiveRecipe
     {
 
-        public override Dictionary<WorldmapCell, WorldmapState> GetModifiedCells(Worldmap worldMap)
+        public override Dictionary<WorldmapSlot, WorldmapState> GetModifiedCells(Worldmap worldMap)
         {
-            Dictionary<WorldmapCell, WorldmapState> ret = new Dictionary<WorldmapCell, WorldmapState>();
-            IEnumerable<WorldmapCell> plains = worldMap.Where(item => item.State.Terrain == MapTerrainType.Plains && !item.State.River);
-            foreach (WorldmapCell plainsCell in plains)
+            Dictionary<WorldmapSlot, WorldmapState> ret = new Dictionary<WorldmapSlot, WorldmapState>();
+            IEnumerable<WorldmapSlot> plains = worldMap.Where(item => item.State.Terrain == MapTerrainType.Plains && !item.State.River);
+            foreach (WorldmapSlot plainsCell in plains)
             {
                 if(plainsCell.Neighbors.Count(item => IsWater(item)) == 1)
                 {
@@ -48,14 +48,14 @@ namespace PassiveRecipes
             return ret;
         }
 
-        private WorldmapState GetWithRiver(WorldmapCell cell)
+        private WorldmapState GetWithRiver(WorldmapSlot cell)
         {
             WorldmapStateBuilder builder = cell.State.ToBuilder();
             builder.River = true;
             return builder.ToState();
         }
 
-        private bool IsWater(WorldmapCell item)
+        private bool IsWater(WorldmapSlot item)
         {
             return item != null &&
                 (IsWaterType(item.State.Terrain)
@@ -66,11 +66,11 @@ namespace PassiveRecipes
     // If a sea touches land, it will become coast
     public class SeaToCoast : PassiveRecipe
     {
-        public override Dictionary<WorldmapCell, WorldmapState> GetModifiedCells(Worldmap worldMap)
+        public override Dictionary<WorldmapSlot, WorldmapState> GetModifiedCells(Worldmap worldMap)
         {
-            Dictionary<WorldmapCell, WorldmapState> ret = new Dictionary<WorldmapCell, WorldmapState>();
-            IEnumerable<WorldmapCell> seas = worldMap.Where(item => item.State.Terrain == MapTerrainType.Sea);
-            foreach (WorldmapCell sea in seas)
+            Dictionary<WorldmapSlot, WorldmapState> ret = new Dictionary<WorldmapSlot, WorldmapState>();
+            IEnumerable<WorldmapSlot> seas = worldMap.Where(item => item.State.Terrain == MapTerrainType.Sea);
+            foreach (WorldmapSlot sea in seas)
             {
                 if(sea.Neighbors.Any(item => IsLand(item)))
                 {
@@ -87,7 +87,7 @@ namespace PassiveRecipes
             return builder.ToState();
         }
 
-        private bool IsLand(WorldmapCell item)
+        private bool IsLand(WorldmapSlot item)
         {
             return item != null
                 && item.State.Terrain != MapTerrainType.Void
@@ -100,12 +100,12 @@ namespace PassiveRecipes
     public class OasisRecipe : PassiveRecipe
     {
 
-        public override Dictionary<WorldmapCell, WorldmapState> GetModifiedCells(Worldmap worldMap)
+        public override Dictionary<WorldmapSlot, WorldmapState> GetModifiedCells(Worldmap worldMap)
         {
-            Dictionary<WorldmapCell, WorldmapState> ret = new Dictionary<WorldmapCell, WorldmapState>();
-            IEnumerable<WorldmapCell> desertLakes = worldMap.Where(item => item.State.Terrain == MapTerrainType.Lake 
+            Dictionary<WorldmapSlot, WorldmapState> ret = new Dictionary<WorldmapSlot, WorldmapState>();
+            IEnumerable<WorldmapSlot> desertLakes = worldMap.Where(item => item.State.Terrain == MapTerrainType.Lake 
             && item.Neighbors.All(neighbor => neighbor?.State.Terrain == MapTerrainType.Desert));
-            foreach (WorldmapCell desertLake in desertLakes)
+            foreach (WorldmapSlot desertLake in desertLakes)
             {
                     ret.Add(desertLake, GetAsOasis(desertLake.State));
             }

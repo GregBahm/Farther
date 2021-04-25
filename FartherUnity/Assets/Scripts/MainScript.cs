@@ -46,7 +46,7 @@ public class MainScript : MonoBehaviour
 
     private void CreateIfNotExistant(int x, int y)
     {
-        if(WorldMap.TryGetCellAt(x, y) == null)
+        if(WorldMap.TryGetSlotAt(x, y) == null)
         {
             CreateInteractionTile(x, y);
         }
@@ -70,7 +70,7 @@ public class MainScript : MonoBehaviour
 
     private MapCellBehavior CreateInteractionTile(int x, int y)
     {
-        WorldmapCell cell = WorldMap.AddCell(x, y);
+        WorldmapSlot cell = WorldMap.AddSlot(x, y);
         GameObject obj = Instantiate(TilePrefab);
         obj.layer = WorldmapTransform.gameObject.layer;
         obj.transform.SetParent(WorldmapTransform, false);

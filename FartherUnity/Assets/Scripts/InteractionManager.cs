@@ -61,7 +61,7 @@ public class InteractionManager : MonoBehaviour
     {
         WorldmapState newState = cardDropRecipe.ModifyState(dropTargetState);
         dropTarget.Model.State = newState;
-        ApplyPassiveRecipes();
+        //ApplyPassiveRecipes();
     }
 
     private CardDropRecipe GetActiveCardDropRecipe(CardType dropCard, WorldmapStateWithNeighbors droptTargetState)
@@ -75,8 +75,8 @@ public class InteractionManager : MonoBehaviour
     {
         foreach (PassiveRecipe recipe in MainScript.Instance.PassiveRecipes)
         {
-            Dictionary<WorldmapCell, WorldmapState> modifications = recipe.GetModifiedCells(MainScript.Instance.WorldMap);
-            foreach (KeyValuePair<WorldmapCell, WorldmapState> entry in modifications)
+            Dictionary<WorldmapSlot, WorldmapState> modifications = recipe.GetModifiedCells(MainScript.Instance.WorldMap);
+            foreach (KeyValuePair<WorldmapSlot, WorldmapState> entry in modifications)
             {
                 entry.Key.State = entry.Value;
             }
