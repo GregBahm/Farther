@@ -31,7 +31,7 @@ public class ArtBindings : MonoBehaviour
 
     public TileArt GetArtFor(WorldmapSlot cell)
     {
-        Texture2D terrain = terrainArtTable[cell.State.Terrain].Texture;
+        Texture2D terrain = terrainArtTable[cell.State.Terrain.Type].Texture;
         return new TileArt(terrain);
     }
 }

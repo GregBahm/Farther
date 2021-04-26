@@ -51,7 +51,7 @@ public class WorldmapSlot
     {
         X = x;
         Y = y;
-        State = new WorldmapState();
+        State = new SitelessTile(new TerrainState());
         this.worldmap = worldmap;
         MapKey = GetSlotKey(x, y);
         NeighborsLookup = GetNeighborsLookup();

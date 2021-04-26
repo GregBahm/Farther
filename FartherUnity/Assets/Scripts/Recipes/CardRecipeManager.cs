@@ -1,9 +1,10 @@
-﻿using CardDropRecipes;
+﻿//using CardDropRecipes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
+/*
 // Card recipes happen the moment a card is dropped, 
 // and only effect the targeted cell
 public class CardRecipeManager : IEnumerable<CardDropRecipe>
@@ -37,3 +38,4 @@ public class CardRecipeManager : IEnumerable<CardDropRecipe>
         yield return new EarthOnHillsToMountain();
     }
 }
+*/

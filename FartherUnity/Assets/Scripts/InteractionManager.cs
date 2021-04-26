@@ -42,45 +42,21 @@ public class InteractionManager : MonoBehaviour
 
     private bool TryDrop(MapCellBehavior dropTarget)
     {
-        WorldmapStateWithNeighbors dropTargetState = dropTarget.Model.GetStateWithNeighbors();
-        CardDropRecipe cardDropRecipe = GetActiveCardDropRecipe(cardTray.DraggedCard.Model, dropTargetState);
-        if(cardDropRecipe != null)
+        Card card = new Card(cardTray.DraggedCard.Model);// TODO: update the model to be a card
+        bool canDrop = dropTarget.Model.State.CanDropCardOnTile(card);
+        if(canDrop)
         {
             MainScript.Instance.EnsureCellAndNeighborsExist(dropTarget.Model.X, dropTarget.Model.Y);
-            UpdateMapState(dropTarget, dropTargetState, cardDropRecipe);
 
+            WorldmapState newState = dropTarget.Model.State.GetFromDrop(card);
+            dropTarget.Model.State = newState;
+     
             cardTray.AddCardToTray(cardTray.DraggedCard.Model); // For debugging
             cardTray.DraggedCard.State = CardBehaviorState.PoofingOutOfExistence;
             cardTray.RemoveCard(cardTray.DraggedCard);
             return true;
         }
         return false;
-    }
-
-    private void UpdateMapState(MapCellBehavior dropTarget, WorldmapStateWithNeighbors dropTargetState, CardDropRecipe cardDropRecipe)
-    {
-        WorldmapState newState = cardDropRecipe.ModifyState(dropTargetState);
-        dropTarget.Model.State = newState;
-        //ApplyPassiveRecipes();
-    }
-
-    private CardDropRecipe GetActiveCardDropRecipe(CardType dropCard, WorldmapStateWithNeighbors droptTargetState)
-    {
-        return MainScript.Instance.CardRecipes
-            .Where(item => item.Card == dropCard)
-            .FirstOrDefault(item => item.CanModifyState(droptTargetState));
-    }
-
-    private void ApplyPassiveRecipes()
-    {
-        foreach (PassiveRecipe recipe in MainScript.Instance.PassiveRecipes)
-        {
-            Dictionary<WorldmapSlot, WorldmapState> modifications = recipe.GetModifiedCells(MainScript.Instance.WorldMap);
-            foreach (KeyValuePair<WorldmapSlot, WorldmapState> entry in modifications)
-            {
-                entry.Key.State = entry.Value;
-            }
-        }
     }
 
     private MapCellBehavior GetDropTarget()

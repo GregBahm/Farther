@@ -20,9 +20,6 @@ public class MainScript : MonoBehaviour
 
     public static MainScript Instance { get; private set; }
 
-    public CardRecipeManager CardRecipes { get; } = new CardRecipeManager();
-    public PassiveRecipeManager PassiveRecipes { get; } = new PassiveRecipeManager();
-
     private void Awake()
     {
         Instance = this;

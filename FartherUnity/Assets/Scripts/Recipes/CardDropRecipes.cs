@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using UnityEditorInternal;
 
+/*
 namespace CardDropRecipes
 {
     public class EarthOnVoidToPlains : CardDropRecipe
@@ -183,3 +182,4 @@ namespace CardDropRecipes
         }
     }
 }
+*/

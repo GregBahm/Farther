@@ -16,18 +16,18 @@ public enum SiteType
 
 public class TerrainState
 {
-    public MapTerrainType Terrain { get; }
+    public MapTerrainType Type { get; }
     public int Temperature { get; }
     public bool Hill { get; }
     public bool River { get; }
 
     public TerrainState(
-        MapTerrainType terrain = default,
+        MapTerrainType type = default,
         int temperature = 0,
         bool hill = false,
         bool river = false)
     {
-        Terrain = terrain;
+        Type = type;
         Temperature = temperature;
         Hill = hill;
         River = river;
@@ -59,7 +59,7 @@ public class TerrainStateBuilder
 
     public TerrainStateBuilder(TerrainState sourceState)
     {
-        Terrain = sourceState.Terrain;
+        Terrain = sourceState.Type;
         Temperature = sourceState.Temperature;
         Hill = sourceState.Hill;
         River = sourceState.River;
@@ -97,7 +97,7 @@ public class SitelessTile : WorldmapState
 
     private StateChangeResult EarthOnVoidToPlains(Card card)
     {
-        bool canDrop = card.Type == CardType.Earth && Terrain.Terrain == MapTerrainType.Void;
+        bool canDrop = card.Type == CardType.Earth && Terrain.Type == MapTerrainType.Void;
         SitelessTile newState = null;
         if(canDrop)
         {
@@ -124,4 +124,9 @@ public class SitelessTile : WorldmapState
 public class Card
 {
     public CardType Type { get; }
+
+    public Card(CardType type)
+    {
+        Type = type;
+    }
 }

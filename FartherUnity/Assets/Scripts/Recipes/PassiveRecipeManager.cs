@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using PassiveRecipes;
+//using PassiveRecipes;
 
+/*
 // Passive recipes happen after any card is dropped,
 // and can effect any cell
 public class PassiveRecipeManager : IEnumerable<PassiveRecipe>
@@ -33,3 +34,4 @@ public class PassiveRecipeManager : IEnumerable<PassiveRecipe>
         return GetEnumerator();
     }
 }
+*/
