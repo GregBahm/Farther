@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class MapCellBehavior : MonoBehaviour
 {
     private bool visualsNeedUpdate;
-    public WorldmapSlot Model { get; private set; }
+    public WorldmapPosition Model { get; private set; }
     private Material mat;
 
     private void Start()
@@ -14,7 +14,7 @@ public class MapCellBehavior : MonoBehaviour
         mat = GetComponentInChildren<MeshRenderer>().material;
     }
 
-    public void Initialize(WorldmapSlot model)
+    public void Initialize(WorldmapPosition model)
     {
         Model = model;
         Model.StateChanged += OnStateChanged;

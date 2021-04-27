@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public class SitelessTile : WorldmapState
 {
@@ -9,11 +10,55 @@ public class SitelessTile : WorldmapState
 
     protected override IEnumerable<PassiveRecipe> GetOnNeighborChangeRecipes()
     {
-        return new PassiveRecipe[0];
+        yield return SeaToCoast;
         // TODO:
         // Tallest Mountain recipe
         // Oasis
         // Sea to Coast
+    }
+
+    private static readonly HashSet<MapTerrainType> seaTypes =
+        new HashSet<MapTerrainType>() {
+                MapTerrainType.Sea,
+                MapTerrainType.Coast,
+        };
+
+
+    private static readonly HashSet<MapTerrainType> hillTypes =
+        new HashSet<MapTerrainType>() {
+                MapTerrainType.Desert,
+                MapTerrainType.Forest,
+                MapTerrainType.Grassland,
+                MapTerrainType.Jungle,
+                MapTerrainType.Plains,
+                MapTerrainType.Savannah,
+                MapTerrainType.Tundra,
+        };
+
+    private StateChangeResult SeaToCoast()
+    {
+        bool shouldChange = GetShouldChangeSeaToCoast();
+        SitelessTile newState = shouldChange ? GetSeaToCoast() : null;
+        return new StateChangeResult(shouldChange, newState);
+    }
+
+    private SitelessTile GetSeaToCoast()
+    {
+        TerrainStateBuilder newTerrain = Terrain.ToBuilder();
+        newTerrain.Type = MapTerrainType.Coast;
+        return new SitelessTile(newTerrain.ToState());
+    }
+
+    private bool GetShouldChangeSeaToCoast()
+    {
+        if (Terrain.Type != MapTerrainType.Sea)
+            return false;
+        return MapPosition.Neighbors.Select(item => item.State.Terrain.Type).Any(item => IsLand(item));
+    }
+
+    private bool IsLand(MapTerrainType item)
+    {
+        return !seaTypes.Contains(item) && item != MapTerrainType.Void;
     }
 
     protected override IEnumerable<DropRecipe> GetDropRecipes()
@@ -26,17 +71,6 @@ public class SitelessTile : WorldmapState
         yield return FloodOnVoid;
         yield return EarthOnLand;
     }
-
-    private static readonly HashSet<MapTerrainType> hillTypes =
-        new HashSet<MapTerrainType>() {
-                MapTerrainType.Desert,
-                MapTerrainType.Forest,
-                MapTerrainType.Grassland,
-                MapTerrainType.Jungle,
-                MapTerrainType.Plains,
-                MapTerrainType.Savannah,
-                MapTerrainType.Tundra,
-        };
 
     private StateChangeResult EarthOnLand(Card card)
     {
@@ -51,7 +85,7 @@ public class SitelessTile : WorldmapState
         TerrainStateBuilder newTerrain = Terrain.ToBuilder();
         if(Terrain.Hill)
         {
-            newTerrain.Terrain = MapTerrainType.Mountain;
+            newTerrain.Type = MapTerrainType.Mountain;
         }else
         {
             newTerrain.Hill = true;
@@ -70,7 +104,7 @@ public class SitelessTile : WorldmapState
     private SitelessTile GetFloodOnVoid()
     {
         TerrainStateBuilder newTerrain = Terrain.ToBuilder();
-        newTerrain.Terrain = MapTerrainType.Sea;
+        newTerrain.Type = MapTerrainType.Sea;
         return new SitelessTile(newTerrain.ToState());
     }
 
@@ -86,7 +120,7 @@ public class SitelessTile : WorldmapState
     private SitelessTile GetFloodOnPlains()
     {
         TerrainStateBuilder newTerrain = Terrain.ToBuilder();
-        newTerrain.Terrain = MapTerrainType.Wetland;
+        newTerrain.Type = MapTerrainType.Wetland;
         return new SitelessTile(newTerrain.ToState());
     }
 
@@ -102,7 +136,7 @@ public class SitelessTile : WorldmapState
     private SitelessTile GetFloodOnForest()
     {
         TerrainStateBuilder newTerrain = Terrain.ToBuilder();
-        newTerrain.Terrain = MapTerrainType.Swamp;
+        newTerrain.Type = MapTerrainType.Swamp;
         return new SitelessTile(newTerrain.ToState());
     }
 
@@ -119,9 +153,9 @@ public class SitelessTile : WorldmapState
     {
         TerrainStateBuilder newTerrain = Terrain.ToBuilder();
         if (Terrain.Temperature > 0)
-            newTerrain.Terrain = MapTerrainType.Jungle;
+            newTerrain.Type = MapTerrainType.Jungle;
         else
-            newTerrain.Terrain = MapTerrainType.Forest;
+            newTerrain.Type = MapTerrainType.Forest;
 
         return new SitelessTile(newTerrain.ToState());
     }
@@ -139,9 +173,9 @@ public class SitelessTile : WorldmapState
     {
         TerrainStateBuilder newTerrain = Terrain.ToBuilder();
         if (Terrain.Temperature < 0)
-            newTerrain.Terrain = MapTerrainType.Savannah;
+            newTerrain.Type = MapTerrainType.Savannah;
         else
-            newTerrain.Terrain = MapTerrainType.Grassland;
+            newTerrain.Type = MapTerrainType.Grassland;
 
         return new SitelessTile(newTerrain.ToState());
     }
@@ -157,11 +191,11 @@ public class SitelessTile : WorldmapState
     {
         TerrainStateBuilder newTerrain = Terrain.ToBuilder();
         if (Terrain.Temperature < 0)
-            newTerrain.Terrain = MapTerrainType.Tundra;
+            newTerrain.Type = MapTerrainType.Tundra;
         else if (Terrain.Temperature > 0)
-            newTerrain.Terrain = MapTerrainType.Desert;
+            newTerrain.Type = MapTerrainType.Desert;
         else
-            newTerrain.Terrain = MapTerrainType.Plains;
+            newTerrain.Type = MapTerrainType.Plains;
 
         return  new SitelessTile(newTerrain.ToState());
 

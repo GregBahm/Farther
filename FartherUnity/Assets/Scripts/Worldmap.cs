@@ -5,34 +5,34 @@ using System.Linq;
 using System.Net.Http.Headers;
 using UnityEngine;
 
-public class Worldmap : IEnumerable<WorldmapSlot>
+public class Worldmap : IEnumerable<WorldmapPosition>
 {
     public static Vector2 AscendingTileOffset { get; } = new Vector2(1, -1.73f).normalized;
-    private readonly Dictionary<string, WorldmapSlot> slots = new Dictionary<string, WorldmapSlot>();
+    private readonly Dictionary<string, WorldmapPosition> slots = new Dictionary<string, WorldmapPosition>();
 
-    public WorldmapSlot AddSlot(int x, int y)
+    public WorldmapPosition AddSlot(int x, int y)
     {
-        WorldmapSlot newSlot = new WorldmapSlot(x, y, this);
+        WorldmapPosition newSlot = new WorldmapPosition(x, y, this);
         slots.Add(newSlot.MapKey, newSlot);
         return newSlot;
     }
 
-    public WorldmapSlot TryGetSlotAt(string slotKey)
+    public WorldmapPosition TryGetPositionAt(string positionKey)
     {
-        if (slots.ContainsKey(slotKey))
+        if (slots.ContainsKey(positionKey))
         {
-            return slots[slotKey];
+            return slots[positionKey];
         }
         return null;
     }
 
-    public WorldmapSlot TryGetSlotAt(int x, int y)
+    public WorldmapPosition TryGetPositionAt(int x, int y)
     {
-        string cellKey = WorldmapSlot.GetSlotKey(x, y);
-        return TryGetSlotAt(cellKey);
+        string cellKey = WorldmapPosition.GetPositionKey(x, y);
+        return TryGetPositionAt(cellKey);
     }
 
-    public IEnumerator<WorldmapSlot> GetEnumerator()
+    public IEnumerator<WorldmapPosition> GetEnumerator()
     {
         return slots.Values.GetEnumerator();
     }
