@@ -6,7 +6,7 @@ using System.Linq;
 
 public abstract class WorldmapState
 {
-    protected WorldmapPosition MapPosition { get; private set; }
+    protected WorldmapPosition Position { get; }
 
     public TerrainState Terrain { get; }
 
@@ -22,9 +22,11 @@ public abstract class WorldmapState
     // Recipes that trigger when the state of a neighboring slot changes
     protected readonly IEnumerable<PassiveRecipe> onNeighborChangeRecipes;
 
-    public WorldmapState(TerrainState terrain,
+    public WorldmapState(WorldmapPosition position,
+        TerrainState terrain,
         SiteType siteType)
     {
+        Position = position;
         Terrain = terrain;
         SiteType = siteType;
         dropRecipes = GetDropRecipes().ToArray();
@@ -57,23 +59,18 @@ public abstract class WorldmapState
 
     internal void OnRemovedFromMap()
     {
-        if(MapPosition != null)
+        foreach (WorldmapPosition neighbor in Position.Neighbors)
         {
-            foreach (WorldmapPosition neighbor in MapPosition.Neighbors)
+            foreach (EventHandler listener in stateChangeListeners)
             {
-                foreach (EventHandler listener in stateChangeListeners)
-                {
-                    neighbor.StateChanged -= listener;
-                }
+                neighbor.StateChanged -= listener;
             }
         }
     }
 
-    internal void OnAddedToMap(WorldmapPosition position)
+    internal void OnAddedToMap()
     {
-        MapPosition = position;
-
-        foreach (WorldmapPosition neighbor in position.Neighbors)
+        foreach (WorldmapPosition neighbor in Position.Neighbors)
         {
             foreach (PassiveRecipe passiveRecipe in onNeighborChangeRecipes)
             {
@@ -94,7 +91,7 @@ public abstract class WorldmapState
         StateChangeResult result = recipe();
         if(result.StateCanChange)
         {
-            MapPosition.State = result.NewState;
+            Position.State = result.NewState;
         }
     }
 }

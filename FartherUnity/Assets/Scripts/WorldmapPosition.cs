@@ -38,7 +38,7 @@ public class WorldmapPosition
                 state = value;
                 if(state != null)
                 {
-                    state.OnAddedToMap(this);
+                    state.OnAddedToMap();
                 }
                 StateChanged?.Invoke(this, EventArgs.Empty);
             }
@@ -51,7 +51,7 @@ public class WorldmapPosition
     {
         X = x;
         Y = y;
-        state = new SitelessTile(new TerrainState());
+        state = new SitelessTile(this, new TerrainState());
         this.worldmap = worldmap;
         MapKey = GetPositionKey(x, y);
         NeighborsLookup = GetNeighborsLookup();

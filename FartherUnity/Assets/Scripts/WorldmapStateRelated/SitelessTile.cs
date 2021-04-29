@@ -4,8 +4,8 @@ using System.Linq;
 
 public class SitelessTile : WorldmapState
 {
-    public SitelessTile(TerrainState terrain)
-        : base(terrain, SiteType.None) 
+    public SitelessTile(WorldmapPosition position, TerrainState terrain)
+        : base(position, terrain, SiteType.None) 
     { }
 
     protected override IEnumerable<PassiveRecipe> GetOnNeighborChangeRecipes()
@@ -46,14 +46,14 @@ public class SitelessTile : WorldmapState
     {
         TerrainStateBuilder newTerrain = Terrain.ToBuilder();
         newTerrain.Type = MapTerrainType.Coast;
-        return new SitelessTile(newTerrain.ToState());
+        return new SitelessTile(Position, newTerrain.ToState());
     }
 
     private bool GetShouldChangeSeaToCoast()
     {
         if (Terrain.Type != MapTerrainType.Sea)
             return false;
-        return MapPosition.Neighbors.Select(item => item.State.Terrain.Type).Any(item => IsLand(item));
+        return Position.Neighbors.Select(item => item.State.Terrain.Type).Any(item => IsLand(item));
     }
 
     private bool IsLand(MapTerrainType item)
@@ -90,7 +90,7 @@ public class SitelessTile : WorldmapState
         {
             newTerrain.Hill = true;
         }
-        return new SitelessTile(newTerrain.ToState());
+        return new SitelessTile(Position, newTerrain.ToState());
     }
 
     private StateChangeResult FloodOnVoid(Card card)
@@ -105,7 +105,7 @@ public class SitelessTile : WorldmapState
     {
         TerrainStateBuilder newTerrain = Terrain.ToBuilder();
         newTerrain.Type = MapTerrainType.Sea;
-        return new SitelessTile(newTerrain.ToState());
+        return new SitelessTile(Position, newTerrain.ToState());
     }
 
     private StateChangeResult FloodOnPlains(Card card)
@@ -121,7 +121,7 @@ public class SitelessTile : WorldmapState
     {
         TerrainStateBuilder newTerrain = Terrain.ToBuilder();
         newTerrain.Type = MapTerrainType.Wetland;
-        return new SitelessTile(newTerrain.ToState());
+        return new SitelessTile(Position, newTerrain.ToState());
     }
 
     private StateChangeResult FloodOnForest(Card card)
@@ -137,7 +137,7 @@ public class SitelessTile : WorldmapState
     {
         TerrainStateBuilder newTerrain = Terrain.ToBuilder();
         newTerrain.Type = MapTerrainType.Swamp;
-        return new SitelessTile(newTerrain.ToState());
+        return new SitelessTile(Position, newTerrain.ToState());
     }
 
     private StateChangeResult GreeneryOnGreenery(Card card)
@@ -157,7 +157,7 @@ public class SitelessTile : WorldmapState
         else
             newTerrain.Type = MapTerrainType.Forest;
 
-        return new SitelessTile(newTerrain.ToState());
+        return new SitelessTile(Position, newTerrain.ToState());
     }
 
     private StateChangeResult GreeneryOnPlains(Card card)
@@ -177,7 +177,7 @@ public class SitelessTile : WorldmapState
         else
             newTerrain.Type = MapTerrainType.Grassland;
 
-        return new SitelessTile(newTerrain.ToState());
+        return new SitelessTile(Position, newTerrain.ToState());
     }
 
     private StateChangeResult EarthOnVoid(Card card)
@@ -197,7 +197,7 @@ public class SitelessTile : WorldmapState
         else
             newTerrain.Type = MapTerrainType.Plains;
 
-        return  new SitelessTile(newTerrain.ToState());
+        return  new SitelessTile(Position, newTerrain.ToState());
 
     }
 }
