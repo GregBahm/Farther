@@ -2,19 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 
-public class SitelessTile : WorldmapState
+public class SitelessState : WorldmapState
 {
-    public SitelessTile(WorldmapPosition position, TerrainState terrain)
+    public SitelessState(WorldmapPosition position, TerrainState terrain)
         : base(position, terrain, SiteType.None) 
     { }
 
     protected override IEnumerable<PassiveRecipe> GetOnNeighborChangeRecipes()
     {
         yield return SeaToCoast;
-        // TODO:
-        // Tallest Mountain recipe
-        // Oasis
-        // Sea to Coast
+        yield return CoastToLake;
+        yield return LakeToOasis;
     }
 
     private static readonly HashSet<MapTerrainType> seaTypes =
@@ -35,18 +33,79 @@ public class SitelessTile : WorldmapState
                 MapTerrainType.Tundra,
         };
 
-    private StateChangeResult SeaToCoast()
+    private StateChangeResult LakeToOasis()
     {
-        bool shouldChange = GetShouldChangeSeaToCoast();
-        SitelessTile newState = shouldChange ? GetSeaToCoast() : null;
+        bool shouldChange = GetShouldChangeLakeToOasis();
+        SitelessState newState = shouldChange ? GetLakeToOasis() : null;
         return new StateChangeResult(shouldChange, newState);
     }
 
-    private SitelessTile GetSeaToCoast()
+    private SitelessState GetLakeToOasis()
+    {
+        TerrainStateBuilder newTerrain = Terrain.ToBuilder();
+        newTerrain.Type = MapTerrainType.Oasis;
+        return new SitelessState(Position, newTerrain.ToState());
+    }
+
+    private bool GetShouldChangeLakeToOasis()
+    {
+        if(Terrain.Type == MapTerrainType.Lake)
+        {
+            return Position.Neighbors.All(item => item.State.Terrain.Type == MapTerrainType.Desert);
+        }
+        return false;
+    }
+
+    // Coast turns to lake if it is surrounded by land or coast tiles that are also surrounded by land
+    private StateChangeResult CoastToLake()
+    {
+        bool shouldChange = GetShouldChangeCoastToLake();
+        SitelessState newState = shouldChange ? GetCoastToLake() : null;
+        return new StateChangeResult(shouldChange, newState);
+    }
+
+    private SitelessState GetCoastToLake()
+    {
+        TerrainStateBuilder newTerrain = Terrain.ToBuilder();
+        newTerrain.Type = MapTerrainType.Lake;
+        return new SitelessState(Position, newTerrain.ToState());
+    }
+
+    private bool GetShouldChangeCoastToLake()
+    {
+        if (Terrain.Type != MapTerrainType.Coast)
+            return false;
+
+        return Position.Neighbors.All(QualifiesForLake);
+    }
+
+    // A lake must be surrounded by either land, or coast surrounded by land and coast.
+    private bool QualifiesForLake(WorldmapPosition neighbor)
+    {
+        if (IsLand(neighbor.State.Terrain.Type))
+            return true;
+
+        foreach (MapTerrainType terrainType in neighbor.Neighbors.Select(item => item.State.Terrain.Type))
+        {
+            if(!IsLand(terrainType) && terrainType != MapTerrainType.Coast)
+                return false;
+        }
+        return true;
+    }
+
+    // Sea turns to coast if it is touching any land
+    private StateChangeResult SeaToCoast()
+    {
+        bool shouldChange = GetShouldChangeSeaToCoast();
+        SitelessState newState = shouldChange ? GetSeaToCoast() : null;
+        return new StateChangeResult(shouldChange, newState);
+    }
+
+    private SitelessState GetSeaToCoast()
     {
         TerrainStateBuilder newTerrain = Terrain.ToBuilder();
         newTerrain.Type = MapTerrainType.Coast;
-        return new SitelessTile(Position, newTerrain.ToState());
+        return new SitelessState(Position, newTerrain.ToState());
     }
 
     private bool GetShouldChangeSeaToCoast()
@@ -76,11 +135,11 @@ public class SitelessTile : WorldmapState
     {
         bool canDrop = card.Type == CardType.Earth
             && hillTypes.Contains(Terrain.Type);
-        SitelessTile newState = canDrop ? GetEarthOnLand() : null;
+        SitelessState newState = canDrop ? GetEarthOnLand() : null;
         return new StateChangeResult(canDrop, newState);
     }
 
-    private SitelessTile GetEarthOnLand()
+    private SitelessState GetEarthOnLand()
     {
         TerrainStateBuilder newTerrain = Terrain.ToBuilder();
         if(Terrain.Hill)
@@ -90,22 +149,22 @@ public class SitelessTile : WorldmapState
         {
             newTerrain.Hill = true;
         }
-        return new SitelessTile(Position, newTerrain.ToState());
+        return new SitelessState(Position, newTerrain.ToState());
     }
 
     private StateChangeResult FloodOnVoid(Card card)
     {
         bool canDrop = card.Type == CardType.Flood
             && Terrain.Type == MapTerrainType.Void;
-        SitelessTile newState = canDrop ? GetFloodOnVoid() : null;
+        SitelessState newState = canDrop ? GetFloodOnVoid() : null;
         return new StateChangeResult(canDrop, newState);
     }
 
-    private SitelessTile GetFloodOnVoid()
+    private SitelessState GetFloodOnVoid()
     {
         TerrainStateBuilder newTerrain = Terrain.ToBuilder();
         newTerrain.Type = MapTerrainType.Sea;
-        return new SitelessTile(Position, newTerrain.ToState());
+        return new SitelessState(Position, newTerrain.ToState());
     }
 
     private StateChangeResult FloodOnPlains(Card card)
@@ -113,15 +172,15 @@ public class SitelessTile : WorldmapState
         bool canDrop = card.Type == CardType.Flood
             && Terrain.Type == MapTerrainType.Plains
             && !Terrain.Hill;
-        SitelessTile newState = canDrop ? GetFloodOnPlains() : null;
+        SitelessState newState = canDrop ? GetFloodOnPlains() : null;
         return new StateChangeResult(canDrop, newState);
     }
 
-    private SitelessTile GetFloodOnPlains()
+    private SitelessState GetFloodOnPlains()
     {
         TerrainStateBuilder newTerrain = Terrain.ToBuilder();
         newTerrain.Type = MapTerrainType.Wetland;
-        return new SitelessTile(Position, newTerrain.ToState());
+        return new SitelessState(Position, newTerrain.ToState());
     }
 
     private StateChangeResult FloodOnForest(Card card)
@@ -129,15 +188,15 @@ public class SitelessTile : WorldmapState
         bool canDrop = card.Type == CardType.Flood
             && Terrain.Type == MapTerrainType.Forest
             && !Terrain.Hill;
-        SitelessTile newState = canDrop ? GetFloodOnForest() : null;
+        SitelessState newState = canDrop ? GetFloodOnForest() : null;
         return new StateChangeResult(canDrop, newState);
     }
 
-    private SitelessTile GetFloodOnForest()
+    private SitelessState GetFloodOnForest()
     {
         TerrainStateBuilder newTerrain = Terrain.ToBuilder();
         newTerrain.Type = MapTerrainType.Swamp;
-        return new SitelessTile(Position, newTerrain.ToState());
+        return new SitelessState(Position, newTerrain.ToState());
     }
 
     private StateChangeResult GreeneryOnGreenery(Card card)
@@ -145,11 +204,11 @@ public class SitelessTile : WorldmapState
         bool canDrop = card.Type == CardType.Greenery
             && (Terrain.Type == MapTerrainType.Grassland
             || Terrain.Type == MapTerrainType.Savannah);
-        SitelessTile state = canDrop ? GetGreeneryOnGreenery() : null;
+        SitelessState state = canDrop ? GetGreeneryOnGreenery() : null;
         return new StateChangeResult(canDrop, state);
     }
 
-    private SitelessTile GetGreeneryOnGreenery()
+    private SitelessState GetGreeneryOnGreenery()
     {
         TerrainStateBuilder newTerrain = Terrain.ToBuilder();
         if (Terrain.Temperature > 0)
@@ -157,7 +216,7 @@ public class SitelessTile : WorldmapState
         else
             newTerrain.Type = MapTerrainType.Forest;
 
-        return new SitelessTile(Position, newTerrain.ToState());
+        return new SitelessState(Position, newTerrain.ToState());
     }
 
     private StateChangeResult GreeneryOnPlains(Card card)
@@ -165,11 +224,11 @@ public class SitelessTile : WorldmapState
         bool canDrop = card.Type == CardType.Greenery &&
             (Terrain.Type == MapTerrainType.Plains
             || Terrain.Type == MapTerrainType.Desert);
-        SitelessTile newState = canDrop ? GetGreeneryOnPlains() : null;
+        SitelessState newState = canDrop ? GetGreeneryOnPlains() : null;
         return new StateChangeResult(canDrop, newState);
     }
 
-    private SitelessTile GetGreeneryOnPlains()
+    private SitelessState GetGreeneryOnPlains()
     {
         TerrainStateBuilder newTerrain = Terrain.ToBuilder();
         if (Terrain.Temperature < 0)
@@ -177,17 +236,17 @@ public class SitelessTile : WorldmapState
         else
             newTerrain.Type = MapTerrainType.Grassland;
 
-        return new SitelessTile(Position, newTerrain.ToState());
+        return new SitelessState(Position, newTerrain.ToState());
     }
 
     private StateChangeResult EarthOnVoid(Card card)
     {
         bool canDrop = card.Type == CardType.Earth && Terrain.Type == MapTerrainType.Void;
-        SitelessTile newState = canDrop ? GetEarthOnVoid() : null;
+        SitelessState newState = canDrop ? GetEarthOnVoid() : null;
         return new StateChangeResult(canDrop, newState);
     }
 
-    private SitelessTile GetEarthOnVoid()
+    private SitelessState GetEarthOnVoid()
     {
         TerrainStateBuilder newTerrain = Terrain.ToBuilder();
         if (Terrain.Temperature < 0)
@@ -197,7 +256,7 @@ public class SitelessTile : WorldmapState
         else
             newTerrain.Type = MapTerrainType.Plains;
 
-        return  new SitelessTile(Position, newTerrain.ToState());
+        return  new SitelessState(Position, newTerrain.ToState());
 
     }
 }

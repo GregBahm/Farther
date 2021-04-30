@@ -51,7 +51,7 @@ public class WorldmapPosition
     {
         X = x;
         Y = y;
-        state = new SitelessTile(this, new TerrainState());
+        state = new SitelessState(this, new TerrainState());
         this.worldmap = worldmap;
         MapKey = GetPositionKey(x, y);
         NeighborsLookup = GetNeighborsLookup();
