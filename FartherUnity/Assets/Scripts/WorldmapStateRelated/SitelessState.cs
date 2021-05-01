@@ -15,6 +15,27 @@ public class SitelessState : WorldmapState
         yield return LakeToOasis;
     }
 
+    protected override IEnumerable<DropRecipe> GetDropRecipes()
+    {
+        yield return EarthOnVoid;
+        yield return GreeneryOnPlains;
+        yield return GreeneryOnGreenery;
+        yield return FloodOnForest;
+        yield return FloodOnPlains;
+        yield return FloodOnVoid;
+        yield return EarthOnLand;
+        yield return DragonLair;
+    }
+
+    private StateChangeResult DragonLair(Card card)
+    {
+        bool shouldChange = card.Type == CardType.Wilds
+            && Terrain.Mythic
+            && Terrain.Type == MapTerrainType.Mountain;
+        WorldmapState dragonState = new DragonLairState(Position, Terrain, SiteType.DragonLair);
+        return new StateChangeResult(shouldChange, dragonState);
+    }
+
     private static readonly HashSet<MapTerrainType> seaTypes =
         new HashSet<MapTerrainType>() {
                 MapTerrainType.Sea,
@@ -120,17 +141,6 @@ public class SitelessState : WorldmapState
         return !seaTypes.Contains(item) && item != MapTerrainType.Void;
     }
 
-    protected override IEnumerable<DropRecipe> GetDropRecipes()
-    {
-        yield return EarthOnVoid;
-        yield return GreeneryOnPlains;
-        yield return GreeneryOnGreenery;
-        yield return FloodOnForest;
-        yield return FloodOnPlains;
-        yield return FloodOnVoid;
-        yield return EarthOnLand;
-    }
-
     private StateChangeResult EarthOnLand(Card card)
     {
         bool canDrop = card.Type == CardType.Earth
@@ -154,7 +164,7 @@ public class SitelessState : WorldmapState
 
     private StateChangeResult FloodOnVoid(Card card)
     {
-        bool canDrop = card.Type == CardType.Flood
+        bool canDrop = card.Type == CardType.Depths
             && Terrain.Type == MapTerrainType.Void;
         SitelessState newState = canDrop ? GetFloodOnVoid() : null;
         return new StateChangeResult(canDrop, newState);
@@ -169,7 +179,7 @@ public class SitelessState : WorldmapState
 
     private StateChangeResult FloodOnPlains(Card card)
     {
-        bool canDrop = card.Type == CardType.Flood
+        bool canDrop = card.Type == CardType.Depths
             && Terrain.Type == MapTerrainType.Plains
             && !Terrain.Hill;
         SitelessState newState = canDrop ? GetFloodOnPlains() : null;
@@ -185,7 +195,7 @@ public class SitelessState : WorldmapState
 
     private StateChangeResult FloodOnForest(Card card)
     {
-        bool canDrop = card.Type == CardType.Flood
+        bool canDrop = card.Type == CardType.Depths
             && Terrain.Type == MapTerrainType.Forest
             && !Terrain.Hill;
         SitelessState newState = canDrop ? GetFloodOnForest() : null;
