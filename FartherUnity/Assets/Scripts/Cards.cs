@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-public class CardsState
+public class Cards
 {
     public event EventHandler<IEnumerable<Card>> CardsAdded;
     public event EventHandler<Card> CardsRemoved;

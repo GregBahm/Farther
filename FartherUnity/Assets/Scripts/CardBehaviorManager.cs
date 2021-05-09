@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class CardsVisualManager : MonoBehaviour
+public class CardBehaviorManager : MonoBehaviour
 {
     public float TrayWidth;
     public float MaxCardSpacing;
@@ -17,9 +17,9 @@ public class CardsVisualManager : MonoBehaviour
     public LayerMask CardsLayer;
 
     public List<CardBehavior> Cards { get; } = new List<CardBehavior>();
-    private readonly Dictionary<CardBehavior, Vector3> trayPositions = new Dictionary<CardBehavior, Vector3>();
+    private readonly Dictionary<CardBehavior, Vector3> cardPositions = new Dictionary<CardBehavior, Vector3>();
 
-    public Transform TrayTransform;
+    public Transform CardsTransform;
 
     private void UpdateTrayPositions()
     {
@@ -27,7 +27,7 @@ public class CardsVisualManager : MonoBehaviour
         for (int i = 0; i < Cards.Count; i++)
         {
             Vector3 pos = GetTrayPositionFor(i, effectiveTrayWidth);
-            trayPositions[Cards[i]] = pos;
+            cardPositions[Cards[i]] = pos;
         }
     }
 
@@ -45,31 +45,30 @@ public class CardsVisualManager : MonoBehaviour
     internal void RemoveCard(CardBehavior draggedCard)
     {
         Cards.Remove(draggedCard);
-        trayPositions.Remove(draggedCard);
+        cardPositions.Remove(draggedCard);
         UpdateTrayPositions();
     }
 
-    //
     private float GetEffectiveTrayWidth()
     {
         float roomRemaining = (Cards.Count - 1) * MaxCardSpacing;
         return Mathf.Min(roomRemaining, TrayWidth);
     }
 
-    public void AddCardToTray(CardType card)
+    public void AddCardToTray(Card card)
     {
         CardBehavior behavior = CreateNewCardObject(card);
         Cards.Add(behavior);
-        trayPositions.Add(behavior, Vector3.zero);
+        cardPositions.Add(behavior, Vector3.zero);
         UpdateTrayPositions();
     }
 
-    private CardBehavior CreateNewCardObject(CardType card)
+    private CardBehavior CreateNewCardObject(Card card)
     {
         GameObject obj = Instantiate(CardPrefab);
-        obj.layer = TrayTransform.gameObject.layer;
+        obj.layer = CardsTransform.gameObject.layer;
         obj.name = "Card " + Cards.Count;
-        obj.transform.SetParent(TrayTransform);
+        obj.transform.SetParent(CardsTransform);
         CardBehavior ret = obj.GetComponent<CardBehavior>();
         ret.Initialize(this, card);
         return ret;
@@ -77,6 +76,6 @@ public class CardsVisualManager : MonoBehaviour
 
     public Vector3 GetTrayPositionFor(CardBehavior card)
     {
-        return trayPositions[card];
+        return cardPositions[card];
     }
 }

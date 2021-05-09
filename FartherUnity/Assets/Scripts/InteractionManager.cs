@@ -8,17 +8,17 @@ public class InteractionManager : MonoBehaviour
 {
     public MainScript Main;
 
-    private CardsVisualManager cardTray;
+    private CardBehaviorManager cardsManager;
 
     private void Start()
     {
-        cardTray = MainScript.Instance.CardsVisualManager;
+        cardsManager = Main.CardsBehaviorManager;
     }
 
     private void Update()
     {
         HandleStartCardDrag();
-        if(cardTray.DraggedCard != null)
+        if(cardsManager.DraggedCard != null)
         {
             HandleCardDrag();
         }
@@ -36,26 +36,26 @@ public class InteractionManager : MonoBehaviour
             }
             if(!dropped)
             {
-                cardTray.DraggedCard.State = CardBehavior.CardBehaviorState.Idle;
+                cardsManager.DraggedCard.InteractionState = CardBehavior.CardInteractionState.Idle;
             }
-            cardTray.DraggedCard = null;
+            cardsManager.DraggedCard = null;
         }
     }
 
     private bool TryDrop(MapCellBehavior dropTarget)
     {
-        Card card = new Card(cardTray.DraggedCard.Model);// TODO: update the model to be a card
+        Card card = cardsManager.DraggedCard.Model;
         bool canDrop = dropTarget.Model.State.CanDropCardOnTile(card);
         if(canDrop)
         {
-            Main.WorldmapVisualManager.EnsureCellAndNeighborsExist(dropTarget.Model.X, dropTarget.Model.Y);
+            Main.MapBehaviorManager.EnsureCellAndNeighborsExist(dropTarget.Model.X, dropTarget.Model.Y);
 
-            WorldmapState newState = dropTarget.Model.State.GetFromDrop(card);
+            MapCellState newState = dropTarget.Model.State.GetFromDrop(card);
             dropTarget.Model.State = newState;
      
-            cardTray.AddCardToTray(cardTray.DraggedCard.Model); // For debugging
-            cardTray.DraggedCard.State = CardBehaviorState.PoofingOutOfExistence;
-            cardTray.RemoveCard(cardTray.DraggedCard);
+            cardsManager.AddCardToTray(cardsManager.DraggedCard.Model); // For debugging
+            cardsManager.DraggedCard.InteractionState = CardInteractionState.PoofingOutOfExistence;
+            cardsManager.RemoveCard(cardsManager.DraggedCard);
             return true;
         }
         return false;
@@ -65,7 +65,7 @@ public class InteractionManager : MonoBehaviour
     {
         Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hitInfo;
-        if (Physics.Raycast(mouseRay, out hitInfo, float.MaxValue, Main.WorldmapVisualManager.MapLayer))
+        if (Physics.Raycast(mouseRay, out hitInfo, float.MaxValue, Main.MapBehaviorManager.MapLayer))
         {
             return hitInfo.collider.transform.parent.gameObject.GetComponent<MapCellBehavior>();
         }
@@ -78,7 +78,7 @@ public class InteractionManager : MonoBehaviour
         {
             Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hitInfo;
-            if (Physics.Raycast(mouseRay, out hitInfo, float.MaxValue, Main.CardsVisualManager.CardsLayer))
+            if (Physics.Raycast(mouseRay, out hitInfo, float.MaxValue, Main.CardsBehaviorManager.CardsLayer))
             {
                 CardBehavior card = hitInfo.collider.gameObject.GetComponent<CardBehavior>();
                 if (card != null)

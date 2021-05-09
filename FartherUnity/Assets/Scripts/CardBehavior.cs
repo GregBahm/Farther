@@ -4,19 +4,19 @@ using UnityEngine.UIElements;
 
 public class CardBehavior : MonoBehaviour
 {
-    private CardsVisualManager tray;
+    private CardBehaviorManager manager;
 
-    public CardType Model { get; private set; }
-    public bool IsDragging { get { return tray.DraggedCard == this; } }
+    public Card Model { get; private set; }
+    public bool IsDragging { get { return manager.DraggedCard == this; } }
 
-    public CardBehaviorState State { get; set; }
+    public CardInteractionState InteractionState { get; set; }
 
-    public void Initialize(CardsVisualManager tray, CardType model)
+    public void Initialize(CardBehaviorManager manager, Card model)
     {
-        this.tray = tray;
+        this.manager = manager;
         Model = model;
         Material mat = GetComponent<MeshRenderer>().material;
-        Texture2D mainTex = ArtBindings.Instance.GetArtFor(model).Texture;
+        Texture2D mainTex = ArtBindings.Instance.GetArtFor(model.Type).Texture;
         mat.SetTexture("_MainTex", mainTex);
     }
 
@@ -24,15 +24,15 @@ public class CardBehavior : MonoBehaviour
 
     private void Update()
     {
-        switch (State)
+        switch (InteractionState)
         {
-            case CardBehaviorState.Dragging:
+            case CardInteractionState.Dragging:
                 DoDragUpdate();
                 break;
-            case CardBehaviorState.PoofingOutOfExistence:
+            case CardInteractionState.PoofingOutOfExistence:
                 DoPoofingOutofExistence();
                 break;
-            case CardBehaviorState.Idle:
+            case CardInteractionState.Idle:
             default:
                 DoIdleUpdate();
                 break;
@@ -52,11 +52,11 @@ public class CardBehavior : MonoBehaviour
 
     private void DoIdleUpdate()
     {
-        Vector3 positionTarget = tray.GetTrayPositionFor(this);
+        Vector3 positionTarget = manager.GetTrayPositionFor(this);
         transform.localPosition = Vector3.Lerp(transform.localPosition, positionTarget, Time.deltaTime * 20);
     }
 
-    public enum CardBehaviorState
+    public enum CardInteractionState
     {
         Idle,
         Dragging,
@@ -65,10 +65,10 @@ public class CardBehavior : MonoBehaviour
 
     internal void StartDragging()
     {
-        tray.DraggedCard = this;
+        manager.DraggedCard = this;
 
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 18));
         dragOffset = transform.position - mousePos;
-        State = CardBehaviorState.Dragging;
+        InteractionState = CardInteractionState.Dragging;
     }
 }

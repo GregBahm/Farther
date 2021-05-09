@@ -1,16 +1,16 @@
 ﻿using System;
 
-public class GameState
+public class Game
 {
-    public Worldmap Map { get; }
+    public Map Map { get; }
     
-    public CardsState Cards { get; }
+    public Cards Cards { get; }
 
     public static event EventHandler TurnEnd;
 
-    public GameState()
+    public Game()
     {
-        Map = new Worldmap(this);
+        Map = new Map(this);
     }
 
     public void AdvanceTurn()
@@ -18,7 +18,7 @@ public class GameState
         TurnEnd?.Invoke(this, EventArgs.Empty);
     }
 
-    public static GameState Load(string path)
+    public static Game Load(string path)
     {
         throw new NotImplementedException();
     }

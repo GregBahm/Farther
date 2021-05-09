@@ -1,22 +1,22 @@
 ﻿using UnityEngine;
 
-public class WorldmapVisualManager : MonoBehaviour
+public class MapBehaviorManager : MonoBehaviour
 {
     public MainScript Main;
 
     public static Vector2 AscendingTileOffset { get; } = new Vector2(1, -1.73f).normalized;
 
     public LayerMask MapLayer;
-    public Transform WorldmapTransform;
+    public Transform MapTransform;
 
-    public GameObject MapPositionPrefab;
+    public GameObject MapCellPrefab;
 
     private MapCellBehavior CreateInteractionTile(int x, int y)
     {
-        WorldmapPosition cell = Main.CurrentState.Map.AddSlot(x, y);
-        GameObject obj = Instantiate(MapPositionPrefab);
-        obj.layer = WorldmapTransform.gameObject.layer;
-        obj.transform.SetParent(WorldmapTransform, false);
+        MapCellPosition cell = Main.Game.Map.AddPosition(x, y);
+        GameObject obj = Instantiate(MapCellPrefab);
+        obj.layer = MapTransform.gameObject.layer;
+        obj.transform.SetParent(MapTransform, false);
         obj.name = x + " " + y;
         MapCellBehavior behavior = obj.GetComponent<MapCellBehavior>();
         behavior.Initialize(cell);
@@ -45,7 +45,7 @@ public class WorldmapVisualManager : MonoBehaviour
 
     private void CreateIfNotExistant(int x, int y)
     {
-        if (Main.CurrentState.Map.TryGetPositionAt(x, y) == null)
+        if (Main.Game.Map.TryGetPositionAt(x, y) == null)
         {
             CreateInteractionTile(x, y);
         }

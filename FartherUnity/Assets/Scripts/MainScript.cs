@@ -8,10 +8,10 @@ public class MainScript : MonoBehaviour
 {
     public bool GenerateCard;
 
-    public GameState CurrentState { get; private set; }
+    public Game Game { get; private set; }
 
-    public CardsVisualManager CardsVisualManager;
-    public WorldmapVisualManager WorldmapVisualManager;
+    public CardBehaviorManager CardsBehaviorManager;
+    public MapBehaviorManager MapBehaviorManager;
 
     private int cardCreationIndex;
 
@@ -24,8 +24,8 @@ public class MainScript : MonoBehaviour
 
     void Start()
     {
-        CurrentState = new GameState();
-        WorldmapVisualManager.EnsureCellAndNeighborsExist(0, 0);
+        Game = new Game();
+        MapBehaviorManager.EnsureCellAndNeighborsExist(0, 0);
         CreateSomeCards();
     }
 
@@ -40,7 +40,7 @@ public class MainScript : MonoBehaviour
     private void CreateCard()
     {
         CardType nextType = (CardType)cardCreationIndex;
-        CardsVisualManager.AddCardToTray(nextType);
+        CardsBehaviorManager.AddCardToTray(new Card(nextType));
         cardCreationIndex++;
         cardCreationIndex %= Enum.GetValues(typeof(CardType)).Length;
     }

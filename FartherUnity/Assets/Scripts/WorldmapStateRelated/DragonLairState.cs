@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-class DragonLairState : WorldmapState
+class DragonLairState : MapCellState
 {
     public readonly int currentDragonAttitude;
     public const int MaxHostility = -5;
@@ -23,7 +23,7 @@ class DragonLairState : WorldmapState
         Ally
     }
 
-    public DragonLairState(WorldmapPosition position, 
+    public DragonLairState(MapCellPosition position, 
         TerrainState terrain,
         int currentDragonAttitude,
         int turnsSinceTribute) 

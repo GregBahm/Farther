@@ -6,15 +6,15 @@ using System.Dynamic;
 using System.Linq;
 using UnityEngine.EventSystems;
 
-public class WorldmapPosition
+public class MapCellPosition
 {
-    public Worldmap Worldmap { get; }
+    public Map Map { get; }
     public Neighbors<string> NeighborsLookup { get; }
-    public IEnumerable<WorldmapPosition> Neighbors
+    public IEnumerable<MapCellPosition> Neighbors
     {
         get
         {
-            return NeighborsLookup.Select(item => Worldmap.TryGetPositionAt(item))
+            return NeighborsLookup.Select(item => Map.TryGetPositionAt(item))
                 .Where(item => item != null);
         }
     }
@@ -23,8 +23,8 @@ public class WorldmapPosition
     public int Y { get; }
     public string MapKey { get; }
 
-    private WorldmapState state;
-    public WorldmapState State 
+    private MapCellState state;
+    public MapCellState State 
     { 
         get => state;
         set 
@@ -47,12 +47,12 @@ public class WorldmapPosition
 
     public event EventHandler StateChanged;
 
-    public WorldmapPosition(int x, int y, Worldmap worldmap)
+    public MapCellPosition(int x, int y, Map map)
     {
         X = x;
         Y = y;
         state = new SitelessState(this, new TerrainState());
-        Worldmap = worldmap;
+        Map = map;
         MapKey = GetPositionKey(x, y);
         NeighborsLookup = GetNeighborsLookup();
     }

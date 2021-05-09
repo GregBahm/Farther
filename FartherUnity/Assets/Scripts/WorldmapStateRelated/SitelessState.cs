@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
-public class SitelessState : WorldmapState
+public class SitelessState : MapCellState
 {
-    public SitelessState(WorldmapPosition position, TerrainState terrain)
+    public SitelessState(MapCellPosition position, TerrainState terrain)
         : base(position, terrain, SiteType.None) 
     { }
 
@@ -32,7 +32,7 @@ public class SitelessState : WorldmapState
         bool shouldChange = card.Type == CardType.Wilds
             && Terrain.Mythic
             && Terrain.Type == MapTerrainType.Mountain;
-        WorldmapState dragonState = new DragonLairState(Position, 
+        MapCellState dragonState = new DragonLairState(Position, 
             Terrain,
             0, 
             0);
@@ -104,7 +104,7 @@ public class SitelessState : WorldmapState
     }
 
     // A lake must be surrounded by either land, or coast surrounded by land and coast.
-    private bool QualifiesForLake(WorldmapPosition neighbor)
+    private bool QualifiesForLake(MapCellPosition neighbor)
     {
         if (IsLand(neighbor.State.Terrain.Type))
             return true;

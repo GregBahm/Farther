@@ -131,8 +131,8 @@ GameObject:
   m_Component:
   - component: {fileID: 140054483}
   - component: {fileID: 140054482}
-  - component: {fileID: 140054484}
   - component: {fileID: 140054485}
+  - component: {fileID: 140054484}
   - component: {fileID: 140054487}
   - component: {fileID: 140054486}
   m_Layer: 0
@@ -155,8 +155,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GenerateCard: 0
-  CardsVisualManager: {fileID: 140054484}
-  WorldmapVisualManager: {fileID: 140054487}
+  CardsBehaviorManager: {fileID: 140054484}
+  MapBehaviorManager: {fileID: 140054487}
 --- !u!4 &140054483
 Transform:
   m_ObjectHideFlags: 0
@@ -190,7 +190,7 @@ MonoBehaviour:
   CardsLayer:
     serializedVersion: 2
     m_Bits: 256
-  TrayTransform: {fileID: 2140823562}
+  CardsTransform: {fileID: 2140823562}
 --- !u!114 &140054485
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -297,8 +297,8 @@ MonoBehaviour:
   MapLayer:
     serializedVersion: 2
     m_Bits: 512
-  WorldmapTransform: {fileID: 585764783}
-  MapPositionPrefab: {fileID: 8609940853070482932, guid: c7dba8462f4d0a848b451d638aca8b46,
+  MapTransform: {fileID: 585764783}
+  MapCellPrefab: {fileID: 8609940853070482932, guid: c7dba8462f4d0a848b451d638aca8b46,
     type: 3}
 --- !u!1 &585764782
 GameObject:
@@ -310,7 +310,7 @@ GameObject:
   m_Component:
   - component: {fileID: 585764783}
   m_Layer: 9
-  m_Name: WorldmapTransform
+  m_Name: MapTransform
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -515,7 +515,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2140823562}
   m_Layer: 8
-  m_Name: TrayTransform
+  m_Name: CardsTransform
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

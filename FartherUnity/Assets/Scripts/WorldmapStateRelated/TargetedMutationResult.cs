@@ -14,10 +14,10 @@ public struct TargetedMutationResult
 
 public struct MutationTarget
 {
-    public WorldmapState NewState { get; }
-    public WorldmapPosition TargetPosition { get; }
+    public MapCellState NewState { get; }
+    public MapCellPosition TargetPosition { get; }
 
-    public MutationTarget(WorldmapState newState, WorldmapPosition targetPosition)
+    public MutationTarget(MapCellState newState, MapCellPosition targetPosition)
     {
         NewState = newState;
         TargetPosition = targetPosition;

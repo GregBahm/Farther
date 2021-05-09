@@ -4,15 +4,15 @@ using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
 
-public abstract class WorldmapState
+public abstract class MapCellState
 {
-    protected WorldmapPosition Position { get; }
+    protected MapCellPosition Position { get; }
 
     public TerrainState Terrain { get; }
 
     public SiteType SiteType { get; }
 
-    public GameState GameState { get { return Position.Worldmap.GameState; } }
+    public Game Game { get { return Position.Map.Game; } }
 
     protected delegate SelfMutationResult CardDropMutator(Card card);
 
@@ -29,7 +29,7 @@ public abstract class WorldmapState
     // Evaluated when a turn ends
     private readonly IEnumerable<PassiveTargetedMutator> onTurnEndMutators;
 
-    public WorldmapState(WorldmapPosition position,
+    public MapCellState(MapCellPosition position,
         TerrainState terrain,
         SiteType siteType)
     {
@@ -61,7 +61,7 @@ public abstract class WorldmapState
         return new PassiveTargetedMutator[0];
     }
 
-    public WorldmapState GetFromDrop(Card card)
+    public MapCellState GetFromDrop(Card card)
     {
         foreach (CardDropMutator item in dropMutators)
         {
@@ -81,10 +81,10 @@ public abstract class WorldmapState
     {
         foreach (EventHandler listener in turnEndListeners)
         {
-            GameState.TurnEnd -= listener;
+            Game.TurnEnd -= listener;
         }
 
-        foreach (WorldmapPosition neighbor in Position.Neighbors)
+        foreach (MapCellPosition neighbor in Position.Neighbors)
         {
             foreach (EventHandler listener in stateChangeListeners)
             {
@@ -98,11 +98,11 @@ public abstract class WorldmapState
         foreach (PassiveTargetedMutator turnEndMutator in onTurnEndMutators)
         {
             EventHandler action = (sender, e) => ProcessTurnEndMutators(turnEndMutator);
-            GameState.TurnEnd += action;
+            Game.TurnEnd += action;
             turnEndListeners.Add(action);
         }
 
-        foreach (WorldmapPosition neighbor in Position.Neighbors)
+        foreach (MapCellPosition neighbor in Position.Neighbors)
         {
             foreach (PassiveSelfMutator passiveMutator in onNeighborChangeMutators)
             {
