@@ -36,7 +36,6 @@ public class Game
         SelfMutationResult result = cell.State.GetFromDrop(card);
         cell.State = result.NewState;
 
-        Cards.Remove(card);
         Cards.Add(result.GainedCards);
     }
 }

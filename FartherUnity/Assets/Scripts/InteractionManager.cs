@@ -29,15 +29,11 @@ public class InteractionManager : MonoBehaviour
         if(!Input.GetMouseButton(0))
         {
             MapCellBehavior dropTarget = GetDropTarget();
-            bool dropped = false;
             if(dropTarget != null)
             {
-                dropped = TryDrop(dropTarget);
+                TryDrop(dropTarget);
             }
-            if(!dropped)
-            {
-                cardsManager.DraggedCard.InteractionState = CardBehavior.CardInteractionState.Idle;
-            }
+            cardsManager.DraggedCard.InteractionState = CardBehavior.CardInteractionState.Idle;
             cardsManager.DraggedCard = null;
         }
     }
