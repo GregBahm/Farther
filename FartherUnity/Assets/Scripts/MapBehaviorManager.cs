@@ -1,8 +1,23 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class MapBehaviorManager : MonoBehaviour
 {
     public MainScript Main;
+
+    private Map map;
+    public Map Map
+    {
+        get => map;
+        set
+        {
+            UnbindMapEvents();
+            //TODO: Delete old game objects
+            this.map = value;
+            BindMapEvents();
+        }
+    }
 
     public static Vector2 AscendingTileOffset { get; } = new Vector2(1, -1.73f).normalized;
 
@@ -11,17 +26,37 @@ public class MapBehaviorManager : MonoBehaviour
 
     public GameObject MapCellPrefab;
 
-    private MapCellBehavior CreateInteractionTile(int x, int y)
+    private readonly List<MapCellBehavior> behaviors = new List<MapCellBehavior>();
+
+    private void UnbindMapEvents()
     {
-        MapCell cell = Main.Game.Map.AddCell(x, y);
+        if(map != null)
+        {
+            map.CellAdded -= OnCellAdded;
+        }
+    }
+
+    private void BindMapEvents()
+    {
+        map.CellAdded += OnCellAdded;
+    }
+
+    private void OnCellAdded(object sender, MapCell e)
+    {
+        CreateCellBehavior(e);
+    }
+
+    private MapCellBehavior CreateCellBehavior(MapCell cell)
+    {
         GameObject obj = Instantiate(MapCellPrefab);
         obj.layer = MapTransform.gameObject.layer;
         obj.transform.SetParent(MapTransform, false);
-        obj.name = x + " " + y;
+        obj.name = cell.X + " " + cell.Y;
         MapCellBehavior behavior = obj.GetComponent<MapCellBehavior>();
         behavior.Initialize(cell);
 
-        obj.transform.localPosition = GetCellPosition(x, y);
+        obj.transform.localPosition = GetCellPosition(cell.X, cell.Y);
+        behaviors.Add(behavior);
         return behavior;
     }
 
@@ -30,24 +65,5 @@ public class MapBehaviorManager : MonoBehaviour
         Vector2 ascendingOffset = AscendingTileOffset * y;
         Vector2 offset = ascendingOffset + new Vector2(x, 0);
         return new Vector3(offset.x, offset.y, 0);
-    }
-
-
-    public void EnsureCellAndNeighborsExist(int x, int y)
-    {
-        CreateIfNotExistant(x, y);
-        foreach (NeighborOffset offset in NeighborOffset.Offsets)
-        {
-            CreateIfNotExistant(x + offset.X, y + offset.Y);
-        }
-
-    }
-
-    private void CreateIfNotExistant(int x, int y)
-    {
-        if (Main.Game.Map.TryGetCellAt(x, y) == null)
-        {
-            CreateInteractionTile(x, y);
-        }
     }
 }

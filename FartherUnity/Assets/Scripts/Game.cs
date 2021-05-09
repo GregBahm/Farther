@@ -11,6 +11,7 @@ public class Game
     public Game()
     {
         Map = new Map(this);
+        Cards = new Cards();
     }
 
     public void AdvanceTurn()
@@ -26,5 +27,16 @@ public class Game
     public void Save(string path)
     {
         throw new NotImplementedException();
+    }
+
+    internal void DoDrop(Card card, MapCell cell)
+    {
+        Map.EnsureCellAndNeighborsExist(cell.X, cell.Y);
+
+        SelfMutationResult result = cell.State.GetFromDrop(card);
+        cell.State = result.NewState;
+
+        Cards.Remove(card);
+        Cards.Add(result.GainedCards);
     }
 }

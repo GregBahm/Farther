@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public class Cards
 {
-    public event EventHandler<IEnumerable<Card>> CardsAdded;
+    public event EventHandler<Card> CardAdded;
     public event EventHandler<Card> CardsRemoved;
 
     private readonly HashSet<Card> hand = new HashSet<Card>();
@@ -15,12 +15,16 @@ public class Cards
         CardsRemoved?.Invoke(this, card);
     }
 
+    public void Add(Card card)
+    {
+        hand.Add(card);
+        CardAdded?.Invoke(this, card);
+    }
     public void Add(IEnumerable<Card> cards)
     {
         foreach (Card card in cards)
         {
-            hand.Add(card);
+            Add(card);
         }
-        CardsAdded?.Invoke(this, cards);
     }
 }

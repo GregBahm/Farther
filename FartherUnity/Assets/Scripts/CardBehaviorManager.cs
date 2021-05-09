@@ -8,7 +8,20 @@ using UnityEngine.UIElements;
 
 public class CardBehaviorManager : MonoBehaviour
 {
-    public float TrayWidth;
+    private Cards cards;
+    public Cards Cards 
+    { 
+        get => cards; 
+        set
+        {
+            UnbindCardEvents();
+            //TODO: Delete old game objects
+            this.cards = value;
+            BindCardEvents();
+        }
+    }
+
+    public float CardHandWidth;
     public float MaxCardSpacing;
 
     public GameObject CardPrefab;
@@ -16,66 +29,75 @@ public class CardBehaviorManager : MonoBehaviour
 
     public LayerMask CardsLayer;
 
-    public List<CardBehavior> Cards { get; } = new List<CardBehavior>();
-    private readonly Dictionary<CardBehavior, Vector3> cardPositions = new Dictionary<CardBehavior, Vector3>();
+    private readonly List<CardBehavior> behaviors = new List<CardBehavior>();
 
     public Transform CardsTransform;
 
-    private void UpdateTrayPositions()
+    private void BindCardEvents()
     {
-        float effectiveTrayWidth = GetEffectiveTrayWidth();
-        for (int i = 0; i < Cards.Count; i++)
+        Cards.CardAdded += OnCardAdded;
+        Cards.CardsRemoved += OnCardRemoved;
+    }
+
+    private void UnbindCardEvents()
+    {
+        if (Cards != null)
         {
-            Vector3 pos = GetTrayPositionFor(i, effectiveTrayWidth);
-            cardPositions[Cards[i]] = pos;
+            Cards.CardAdded -= OnCardAdded;
+            Cards.CardsRemoved -= OnCardRemoved;
         }
     }
 
-    private Vector3 GetTrayPositionFor(int i, float effectiveTrayWidth)
+    private void OnCardRemoved(object sender, Card e)
     {
-        if(Cards.Count == 1)
+        CardBehavior behavior = behaviors.First(item => item.Model == e);
+        behavior.InteractionState = CardBehavior.CardInteractionState.PoofingOutOfExistence;
+        behaviors.Remove(behavior);
+        UpdateCardHandPositions();
+    }
+
+    private void OnCardAdded(object sender, Card e)
+    {
+        CardBehavior behavior = CreateNewCardBehavior(e);
+        behaviors.Add(behavior);
+        UpdateCardHandPositions();
+    }
+
+    private void UpdateCardHandPositions()
+    {
+        float effectiveHandWidth = GetEffectiveHandWidth();
+        for (int i = 0; i < behaviors.Count; i++)
+        {
+            Vector3 pos = GetHandPositionFor(i, effectiveHandWidth);
+            behaviors[i].HandPosition = pos;
+        }
+    }
+
+    private Vector3 GetHandPositionFor(int i, float effectiveTrayWidth)
+    {
+        if (behaviors.Count == 1)
         {
             return Vector3.zero;
         }
-        float param = (float)i / (Cards.Count - 1) - .5f;
+        float param = (float)i / (behaviors.Count - 1) - .5f;
         float x = effectiveTrayWidth * param;
         return new Vector3(x, 0, 0);
     }
 
-    internal void RemoveCard(CardBehavior draggedCard)
+    private float GetEffectiveHandWidth()
     {
-        Cards.Remove(draggedCard);
-        cardPositions.Remove(draggedCard);
-        UpdateTrayPositions();
+        float roomRemaining = (behaviors.Count - 1) * MaxCardSpacing;
+        return Mathf.Min(roomRemaining, CardHandWidth);
     }
 
-    private float GetEffectiveTrayWidth()
-    {
-        float roomRemaining = (Cards.Count - 1) * MaxCardSpacing;
-        return Mathf.Min(roomRemaining, TrayWidth);
-    }
-
-    public void AddCardToTray(Card card)
-    {
-        CardBehavior behavior = CreateNewCardObject(card);
-        Cards.Add(behavior);
-        cardPositions.Add(behavior, Vector3.zero);
-        UpdateTrayPositions();
-    }
-
-    private CardBehavior CreateNewCardObject(Card card)
+    private CardBehavior CreateNewCardBehavior(Card card)
     {
         GameObject obj = Instantiate(CardPrefab);
         obj.layer = CardsTransform.gameObject.layer;
-        obj.name = "Card " + Cards.Count;
+        obj.name = card.Type.ToString();
         obj.transform.SetParent(CardsTransform);
         CardBehavior ret = obj.GetComponent<CardBehavior>();
         ret.Initialize(this, card);
         return ret;
-    }
-
-    public Vector3 GetTrayPositionFor(CardBehavior card)
-    {
-        return cardPositions[card];
     }
 }

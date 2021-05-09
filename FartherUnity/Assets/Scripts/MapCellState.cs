@@ -61,14 +61,14 @@ public abstract class MapCellState
         return new PassiveTargetedMutator[0];
     }
 
-    public MapCellState GetFromDrop(Card card)
+    public SelfMutationResult GetFromDrop(Card card)
     {
         foreach (CardDropMutator item in dropMutators)
         {
             SelfMutationResult result = item(card);
             if (result.StateChanged)
             {
-                return result.NewState;
+                return result;
             }
         }
         throw new InvalidOperationException("Can't GetFromDrop when no mutators can drop.");

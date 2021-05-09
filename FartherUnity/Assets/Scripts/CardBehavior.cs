@@ -11,6 +11,8 @@ public class CardBehavior : MonoBehaviour
 
     public CardInteractionState InteractionState { get; set; }
 
+    public Vector3 HandPosition { get; set; }
+
     public void Initialize(CardBehaviorManager manager, Card model)
     {
         this.manager = manager;
@@ -52,8 +54,7 @@ public class CardBehavior : MonoBehaviour
 
     private void DoIdleUpdate()
     {
-        Vector3 positionTarget = manager.GetTrayPositionFor(this);
-        transform.localPosition = Vector3.Lerp(transform.localPosition, positionTarget, Time.deltaTime * 20);
+        transform.localPosition = Vector3.Lerp(transform.localPosition, HandPosition, Time.deltaTime * 20);
     }
 
     public enum CardInteractionState

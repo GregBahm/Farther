@@ -2,10 +2,19 @@
 
 public struct SelfMutationResult
 {
+    private static readonly IEnumerable<Card> NoCards = new Card[0];
+
     public bool StateChanged { get; }
     public MapCellState NewState { get; }
 
-    public IEnumerable<Card> GainedCards { get; }
+    private readonly IEnumerable<Card> gainedCards;
+    public IEnumerable<Card> GainedCards
+    {
+        get
+        {
+            return gainedCards ?? NoCards;
+        }
+    }
 
     public SelfMutationResult(bool stateChanged = false, 
         MapCellState newState = null,
@@ -13,6 +22,6 @@ public struct SelfMutationResult
     {
         StateChanged = stateChanged;
         NewState = newState;
-        GainedCards = gainedCards;
+        this.gainedCards = gainedCards;
     }
 }

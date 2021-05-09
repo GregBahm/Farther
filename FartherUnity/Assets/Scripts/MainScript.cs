@@ -25,7 +25,9 @@ public class MainScript : MonoBehaviour
     void Start()
     {
         Game = new Game();
-        MapBehaviorManager.EnsureCellAndNeighborsExist(0, 0);
+        CardsBehaviorManager.Cards = Game.Cards;
+        MapBehaviorManager.Map = Game.Map;
+        Game.Map.EnsureCellAndNeighborsExist(0, 0);
         CreateSomeCards();
     }
 
@@ -40,7 +42,7 @@ public class MainScript : MonoBehaviour
     private void CreateCard()
     {
         CardType nextType = (CardType)cardCreationIndex;
-        CardsBehaviorManager.AddCardToTray(new Card(nextType));
+        Game.Cards.Add(new Card(nextType));
         cardCreationIndex++;
         cardCreationIndex %= Enum.GetValues(typeof(CardType)).Length;
     }

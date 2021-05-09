@@ -48,14 +48,7 @@ public class InteractionManager : MonoBehaviour
         bool canDrop = dropTarget.Cell.State.CanDropCardOnTile(card);
         if(canDrop)
         {
-            Main.MapBehaviorManager.EnsureCellAndNeighborsExist(dropTarget.Cell.X, dropTarget.Cell.Y);
-
-            MapCellState newState = dropTarget.Cell.State.GetFromDrop(card);
-            dropTarget.Cell.State = newState;
-     
-            cardsManager.AddCardToTray(cardsManager.DraggedCard.Model); // For debugging
-            cardsManager.DraggedCard.InteractionState = CardInteractionState.PoofingOutOfExistence;
-            cardsManager.RemoveCard(cardsManager.DraggedCard);
+            Main.Game.DoDrop(card, dropTarget.Cell);
             return true;
         }
         return false;

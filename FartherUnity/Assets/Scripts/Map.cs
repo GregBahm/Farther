@@ -9,6 +9,8 @@ public class Map : IEnumerable<MapCell>
 {
     public Game Game { get; }
 
+    public event EventHandler<MapCell> CellAdded;
+
     private readonly Dictionary<string, MapCell> cells = new Dictionary<string, MapCell>();
 
     public Map(Game gameState)
@@ -20,6 +22,7 @@ public class Map : IEnumerable<MapCell>
     {
         MapCell ret = new MapCell(x, y, this);
         cells.Add(ret.MapKey, ret);
+        CellAdded?.Invoke(this, ret);
         return ret;
     }
 
@@ -36,6 +39,24 @@ public class Map : IEnumerable<MapCell>
     {
         string cellKey = MapCell.GetPositionKey(x, y);
         return TryGetCellAt(cellKey);
+    }
+
+
+    public void EnsureCellAndNeighborsExist(int x, int y)
+    {
+        CreateIfNotExistant(x, y);
+        foreach (NeighborOffset offset in NeighborOffset.Offsets)
+        {
+            CreateIfNotExistant(x + offset.X, y + offset.Y);
+        }
+    }
+
+    private void CreateIfNotExistant(int x, int y)
+    {
+        if (TryGetCellAt(x, y) == null)
+        {
+            AddCell(x, y);
+        }
     }
 
     public IEnumerator<MapCell> GetEnumerator()
