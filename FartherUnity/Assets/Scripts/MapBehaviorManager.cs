@@ -13,7 +13,7 @@ public class MapBehaviorManager : MonoBehaviour
 
     private MapCellBehavior CreateInteractionTile(int x, int y)
     {
-        MapCellPosition cell = Main.Game.Map.AddPosition(x, y);
+        MapCell cell = Main.Game.Map.AddCell(x, y);
         GameObject obj = Instantiate(MapCellPrefab);
         obj.layer = MapTransform.gameObject.layer;
         obj.transform.SetParent(MapTransform, false);
@@ -45,7 +45,7 @@ public class MapBehaviorManager : MonoBehaviour
 
     private void CreateIfNotExistant(int x, int y)
     {
-        if (Main.Game.Map.TryGetPositionAt(x, y) == null)
+        if (Main.Game.Map.TryGetCellAt(x, y) == null)
         {
             CreateInteractionTile(x, y);
         }

@@ -5,42 +5,42 @@ using System.Linq;
 using System.Net.Http.Headers;
 using UnityEngine;
 
-public class Map : IEnumerable<MapCellPosition>
+public class Map : IEnumerable<MapCell>
 {
     public Game Game { get; }
 
-    private readonly Dictionary<string, MapCellPosition> slots = new Dictionary<string, MapCellPosition>();
+    private readonly Dictionary<string, MapCell> cells = new Dictionary<string, MapCell>();
 
     public Map(Game gameState)
     {
         Game = gameState;
     }
 
-    public MapCellPosition AddPosition(int x, int y)
+    public MapCell AddCell(int x, int y)
     {
-        MapCellPosition newPosition = new MapCellPosition(x, y, this);
-        slots.Add(newPosition.MapKey, newPosition);
-        return newPosition;
+        MapCell ret = new MapCell(x, y, this);
+        cells.Add(ret.MapKey, ret);
+        return ret;
     }
 
-    public MapCellPosition TryGetPositionAt(string positionKey)
+    public MapCell TryGetCellAt(string cellKey)
     {
-        if (slots.ContainsKey(positionKey))
+        if (cells.ContainsKey(cellKey))
         {
-            return slots[positionKey];
+            return cells[cellKey];
         }
         return null;
     }
 
-    public MapCellPosition TryGetPositionAt(int x, int y)
+    public MapCell TryGetCellAt(int x, int y)
     {
-        string cellKey = MapCellPosition.GetPositionKey(x, y);
-        return TryGetPositionAt(cellKey);
+        string cellKey = MapCell.GetPositionKey(x, y);
+        return TryGetCellAt(cellKey);
     }
 
-    public IEnumerator<MapCellPosition> GetEnumerator()
+    public IEnumerator<MapCell> GetEnumerator()
     {
-        return slots.Values.GetEnumerator();
+        return cells.Values.GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()

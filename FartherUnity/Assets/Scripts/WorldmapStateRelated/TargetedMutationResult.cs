@@ -15,9 +15,9 @@ public struct TargetedMutationResult
 public struct MutationTarget
 {
     public MapCellState NewState { get; }
-    public MapCellPosition TargetPosition { get; }
+    public MapCell TargetPosition { get; }
 
-    public MutationTarget(MapCellState newState, MapCellPosition targetPosition)
+    public MutationTarget(MapCellState newState, MapCell targetPosition)
     {
         NewState = newState;
         TargetPosition = targetPosition;

@@ -4,7 +4,7 @@ using System.Linq;
 
 public class SitelessState : MapCellState
 {
-    public SitelessState(MapCellPosition position, TerrainState terrain)
+    public SitelessState(MapCell position, TerrainState terrain)
         : base(position, terrain, SiteType.None) 
     { }
 
@@ -32,7 +32,7 @@ public class SitelessState : MapCellState
         bool shouldChange = card.Type == CardType.Wilds
             && Terrain.Mythic
             && Terrain.Type == MapTerrainType.Mountain;
-        MapCellState dragonState = new DragonLairState(Position, 
+        MapCellState dragonState = new DragonLairState(Cell, 
             Terrain,
             0, 
             0);
@@ -68,14 +68,14 @@ public class SitelessState : MapCellState
     {
         TerrainStateBuilder newTerrain = Terrain.ToBuilder();
         newTerrain.Type = MapTerrainType.Oasis;
-        return new SitelessState(Position, newTerrain.ToState());
+        return new SitelessState(Cell, newTerrain.ToState());
     }
 
     private bool GetShouldChangeLakeToOasis()
     {
         if(Terrain.Type == MapTerrainType.Lake)
         {
-            return Position.Neighbors.All(item => item.State.Terrain.Type == MapTerrainType.Desert);
+            return Cell.Neighbors.All(item => item.State.Terrain.Type == MapTerrainType.Desert);
         }
         return false;
     }
@@ -92,7 +92,7 @@ public class SitelessState : MapCellState
     {
         TerrainStateBuilder newTerrain = Terrain.ToBuilder();
         newTerrain.Type = MapTerrainType.Lake;
-        return new SitelessState(Position, newTerrain.ToState());
+        return new SitelessState(Cell, newTerrain.ToState());
     }
 
     private bool GetShouldChangeCoastToLake()
@@ -100,11 +100,11 @@ public class SitelessState : MapCellState
         if (Terrain.Type != MapTerrainType.Coast)
             return false;
 
-        return Position.Neighbors.All(QualifiesForLake);
+        return Cell.Neighbors.All(QualifiesForLake);
     }
 
     // A lake must be surrounded by either land, or coast surrounded by land and coast.
-    private bool QualifiesForLake(MapCellPosition neighbor)
+    private bool QualifiesForLake(MapCell neighbor)
     {
         if (IsLand(neighbor.State.Terrain.Type))
             return true;
@@ -129,14 +129,14 @@ public class SitelessState : MapCellState
     {
         TerrainStateBuilder newTerrain = Terrain.ToBuilder();
         newTerrain.Type = MapTerrainType.Coast;
-        return new SitelessState(Position, newTerrain.ToState());
+        return new SitelessState(Cell, newTerrain.ToState());
     }
 
     private bool GetShouldChangeSeaToCoast()
     {
         if (Terrain.Type != MapTerrainType.Sea)
             return false;
-        return Position.Neighbors.Select(item => item.State.Terrain.Type).Any(item => IsLand(item));
+        return Cell.Neighbors.Select(item => item.State.Terrain.Type).Any(item => IsLand(item));
     }
 
     private bool IsLand(MapTerrainType item)
@@ -162,7 +162,7 @@ public class SitelessState : MapCellState
         {
             newTerrain.Hill = true;
         }
-        return new SitelessState(Position, newTerrain.ToState());
+        return new SitelessState(Cell, newTerrain.ToState());
     }
 
     private SelfMutationResult FloodOnVoid(Card card)
@@ -177,7 +177,7 @@ public class SitelessState : MapCellState
     {
         TerrainStateBuilder newTerrain = Terrain.ToBuilder();
         newTerrain.Type = MapTerrainType.Sea;
-        return new SitelessState(Position, newTerrain.ToState());
+        return new SitelessState(Cell, newTerrain.ToState());
     }
 
     private SelfMutationResult FloodOnPlains(Card card)
@@ -193,7 +193,7 @@ public class SitelessState : MapCellState
     {
         TerrainStateBuilder newTerrain = Terrain.ToBuilder();
         newTerrain.Type = MapTerrainType.Wetland;
-        return new SitelessState(Position, newTerrain.ToState());
+        return new SitelessState(Cell, newTerrain.ToState());
     }
 
     private SelfMutationResult FloodOnForest(Card card)
@@ -209,7 +209,7 @@ public class SitelessState : MapCellState
     {
         TerrainStateBuilder newTerrain = Terrain.ToBuilder();
         newTerrain.Type = MapTerrainType.Swamp;
-        return new SitelessState(Position, newTerrain.ToState());
+        return new SitelessState(Cell, newTerrain.ToState());
     }
 
     private SelfMutationResult GreeneryOnGreenery(Card card)
@@ -229,7 +229,7 @@ public class SitelessState : MapCellState
         else
             newTerrain.Type = MapTerrainType.Forest;
 
-        return new SitelessState(Position, newTerrain.ToState());
+        return new SitelessState(Cell, newTerrain.ToState());
     }
 
     private SelfMutationResult GreeneryOnPlains(Card card)
@@ -249,7 +249,7 @@ public class SitelessState : MapCellState
         else
             newTerrain.Type = MapTerrainType.Grassland;
 
-        return new SitelessState(Position, newTerrain.ToState());
+        return new SitelessState(Cell, newTerrain.ToState());
     }
 
     private SelfMutationResult EarthOnVoid(Card card)
@@ -269,7 +269,7 @@ public class SitelessState : MapCellState
         else
             newTerrain.Type = MapTerrainType.Plains;
 
-        return  new SitelessState(Position, newTerrain.ToState());
+        return  new SitelessState(Cell, newTerrain.ToState());
 
     }
 }

@@ -6,13 +6,13 @@ using System.Linq;
 
 public abstract class MapCellState
 {
-    protected MapCellPosition Position { get; }
+    protected MapCell Cell { get; }
 
     public TerrainState Terrain { get; }
 
     public SiteType SiteType { get; }
 
-    public Game Game { get { return Position.Map.Game; } }
+    public Game Game { get { return Cell.Map.Game; } }
 
     protected delegate SelfMutationResult CardDropMutator(Card card);
 
@@ -29,11 +29,11 @@ public abstract class MapCellState
     // Evaluated when a turn ends
     private readonly IEnumerable<PassiveTargetedMutator> onTurnEndMutators;
 
-    public MapCellState(MapCellPosition position,
+    public MapCellState(MapCell cell,
         TerrainState terrain,
         SiteType siteType)
     {
-        Position = position;
+        Cell = cell;
         Terrain = terrain;
         SiteType = siteType;
         dropMutators = GetDropMutators().ToArray();
@@ -84,7 +84,7 @@ public abstract class MapCellState
             Game.TurnEnd -= listener;
         }
 
-        foreach (MapCellPosition neighbor in Position.Neighbors)
+        foreach (MapCell neighbor in Cell.Neighbors)
         {
             foreach (EventHandler listener in stateChangeListeners)
             {
@@ -102,7 +102,7 @@ public abstract class MapCellState
             turnEndListeners.Add(action);
         }
 
-        foreach (MapCellPosition neighbor in Position.Neighbors)
+        foreach (MapCell neighbor in Cell.Neighbors)
         {
             foreach (PassiveSelfMutator passiveMutator in onNeighborChangeMutators)
             {
@@ -135,7 +135,7 @@ public abstract class MapCellState
         SelfMutationResult result = mutator();
         if(result.StateChanged)
         {
-            Position.State = result.NewState;
+            Cell.State = result.NewState;
         }
     }
 }

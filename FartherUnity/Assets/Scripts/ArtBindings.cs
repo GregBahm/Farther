@@ -29,7 +29,7 @@ public class ArtBindings : MonoBehaviour
         return cardArtTable[cardType];
     }
 
-    public TileArt GetArtFor(MapCellPosition cell)
+    public TileArt GetArtFor(MapCell cell)
     {
         Texture2D terrain = terrainArtTable[cell.State.Terrain.Type].Texture;
         return new TileArt(terrain);

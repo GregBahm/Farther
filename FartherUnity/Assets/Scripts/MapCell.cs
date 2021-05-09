@@ -6,15 +6,15 @@ using System.Dynamic;
 using System.Linq;
 using UnityEngine.EventSystems;
 
-public class MapCellPosition
+public class MapCell
 {
     public Map Map { get; }
     public Neighbors<string> NeighborsLookup { get; }
-    public IEnumerable<MapCellPosition> Neighbors
+    public IEnumerable<MapCell> Neighbors
     {
         get
         {
-            return NeighborsLookup.Select(item => Map.TryGetPositionAt(item))
+            return NeighborsLookup.Select(item => Map.TryGetCellAt(item))
                 .Where(item => item != null);
         }
     }
@@ -47,7 +47,7 @@ public class MapCellPosition
 
     public event EventHandler StateChanged;
 
-    public MapCellPosition(int x, int y, Map map)
+    public MapCell(int x, int y, Map map)
     {
         X = x;
         Y = y;

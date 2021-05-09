@@ -23,7 +23,7 @@ class DragonLairState : MapCellState
         Ally
     }
 
-    public DragonLairState(MapCellPosition position, 
+    public DragonLairState(MapCell position, 
         TerrainState terrain,
         int currentDragonAttitude,
         int turnsSinceTribute) 
@@ -76,6 +76,6 @@ class DragonLairState : MapCellState
 
     private DragonLairState GetOnTributeDropped()
     {
-        return new DragonLairState(Position, Terrain, currentDragonAttitude + 1, 0);
+        return new DragonLairState(Cell, Terrain, currentDragonAttitude + 1, 0);
     }
 }

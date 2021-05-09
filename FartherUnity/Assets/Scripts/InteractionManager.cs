@@ -45,13 +45,13 @@ public class InteractionManager : MonoBehaviour
     private bool TryDrop(MapCellBehavior dropTarget)
     {
         Card card = cardsManager.DraggedCard.Model;
-        bool canDrop = dropTarget.Model.State.CanDropCardOnTile(card);
+        bool canDrop = dropTarget.Cell.State.CanDropCardOnTile(card);
         if(canDrop)
         {
-            Main.MapBehaviorManager.EnsureCellAndNeighborsExist(dropTarget.Model.X, dropTarget.Model.Y);
+            Main.MapBehaviorManager.EnsureCellAndNeighborsExist(dropTarget.Cell.X, dropTarget.Cell.Y);
 
-            MapCellState newState = dropTarget.Model.State.GetFromDrop(card);
-            dropTarget.Model.State = newState;
+            MapCellState newState = dropTarget.Cell.State.GetFromDrop(card);
+            dropTarget.Cell.State = newState;
      
             cardsManager.AddCardToTray(cardsManager.DraggedCard.Model); // For debugging
             cardsManager.DraggedCard.InteractionState = CardInteractionState.PoofingOutOfExistence;

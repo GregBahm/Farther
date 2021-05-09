@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class MapCellBehavior : MonoBehaviour
 {
     private bool visualsNeedUpdate;
-    public MapCellPosition Model { get; private set; }
+    public MapCell Cell { get; private set; }
     private Material mat;
 
     private void Start()
@@ -14,10 +14,10 @@ public class MapCellBehavior : MonoBehaviour
         mat = GetComponentInChildren<MeshRenderer>().material;
     }
 
-    public void Initialize(MapCellPosition model)
+    public void Initialize(MapCell cell)
     {
-        Model = model;
-        Model.StateChanged += OnStateChanged;
+        Cell = cell;
+        Cell.StateChanged += OnStateChanged;
     }
 
     private void Update()
@@ -36,7 +36,7 @@ public class MapCellBehavior : MonoBehaviour
 
     internal void UpdateVisuals()
     {
-        TileArt art = ArtBindings.Instance.GetArtFor(Model);
+        TileArt art = ArtBindings.Instance.GetArtFor(Cell);
         mat.SetTexture("_MainTex", art.Terrain);
     }
 }
