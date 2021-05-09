@@ -6,13 +6,15 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class CardsManager : MonoBehaviour
+public class CardsVisualManager : MonoBehaviour
 {
     public float TrayWidth;
     public float MaxCardSpacing;
 
     public GameObject CardPrefab;
     public CardBehavior DraggedCard { get; set; }
+
+    public LayerMask CardsLayer;
 
     public List<CardBehavior> Cards { get; } = new List<CardBehavior>();
     private readonly Dictionary<CardBehavior, Vector3> trayPositions = new Dictionary<CardBehavior, Vector3>();

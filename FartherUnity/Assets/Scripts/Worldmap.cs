@@ -7,8 +7,14 @@ using UnityEngine;
 
 public class Worldmap : IEnumerable<WorldmapPosition>
 {
-    public static Vector2 AscendingTileOffset { get; } = new Vector2(1, -1.73f).normalized;
+    public GameState GameState { get; }
+
     private readonly Dictionary<string, WorldmapPosition> slots = new Dictionary<string, WorldmapPosition>();
+
+    public Worldmap(GameState gameState)
+    {
+        GameState = gameState;
+    }
 
     public WorldmapPosition AddSlot(int x, int y)
     {

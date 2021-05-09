@@ -12,15 +12,22 @@ public abstract class WorldmapState
 
     public SiteType SiteType { get; }
 
-    protected delegate StateChangeResult DropRecipe(Card card);
+    public GameState GameState { get { return Position.Worldmap.GameState; } }
 
-    protected delegate StateChangeResult PassiveRecipe();
+    protected delegate SelfMutationResult CardDropMutator(Card card);
 
-    // Recipes that trigger when a card is dropped on the worldmap slot
-    protected readonly IEnumerable<DropRecipe> dropRecipes;
+    protected delegate SelfMutationResult PassiveSelfMutator();
 
-    // Recipes that trigger when the state of a neighboring slot changes
-    protected readonly IEnumerable<PassiveRecipe> onNeighborChangeRecipes;
+    protected delegate TargetedMutationResult PassiveTargetedMutator();
+
+    // Evaluated when a card is dropped on the worldmap slot
+    private readonly IEnumerable<CardDropMutator> dropMutators;
+
+    // Evaluated when the state of a neighboring slot changes
+    private readonly IEnumerable<PassiveSelfMutator> onNeighborChangeMutators;
+
+    // Evaluated when a turn ends
+    private readonly IEnumerable<PassiveTargetedMutator> onTurnEndMutators;
 
     public WorldmapState(WorldmapPosition position,
         TerrainState terrain,
@@ -29,36 +36,54 @@ public abstract class WorldmapState
         Position = position;
         Terrain = terrain;
         SiteType = siteType;
-        dropRecipes = GetDropRecipes().ToArray();
-        onNeighborChangeRecipes = GetOnNeighborChangeRecipes().ToArray();
+        dropMutators = GetDropMutators().ToArray();
+        onNeighborChangeMutators = GetOnNeighborChangeMutators().ToArray();
+        onTurnEndMutators = GetOnTurnEndMutators().ToArray();
     }
 
     public bool CanDropCardOnTile(Card card)
     {
-        return dropRecipes.Any(item => item(card).StateCanChange);
+        return dropMutators.Any(item => item(card).StateChanged);
     }
 
-    protected abstract IEnumerable<DropRecipe> GetDropRecipes();
+    protected virtual IEnumerable<CardDropMutator> GetDropMutators()
+    {
+        return new CardDropMutator[0];
+    }
 
-    protected abstract IEnumerable<PassiveRecipe> GetOnNeighborChangeRecipes();
+    protected virtual IEnumerable<PassiveSelfMutator> GetOnNeighborChangeMutators()
+    {
+        return new PassiveSelfMutator[0];
+    }
+
+    protected virtual IEnumerable<PassiveTargetedMutator> GetOnTurnEndMutators()
+    {
+        return new PassiveTargetedMutator[0];
+    }
 
     public WorldmapState GetFromDrop(Card card)
     {
-        foreach (var item in dropRecipes)
+        foreach (CardDropMutator item in dropMutators)
         {
-            StateChangeResult result = item(card);
-            if (result.StateCanChange)
+            SelfMutationResult result = item(card);
+            if (result.StateChanged)
             {
                 return result.NewState;
             }
         }
-        throw new InvalidOperationException("Can't GetFromDrop when no recipes can drop.");
+        throw new InvalidOperationException("Can't GetFromDrop when no mutators can drop.");
     }
 
     private readonly List<EventHandler> stateChangeListeners = new List<EventHandler>();
+    private readonly List<EventHandler> turnEndListeners = new List<EventHandler>();
 
     internal void OnRemovedFromMap()
     {
+        foreach (EventHandler listener in turnEndListeners)
+        {
+            GameState.TurnEnd -= listener;
+        }
+
         foreach (WorldmapPosition neighbor in Position.Neighbors)
         {
             foreach (EventHandler listener in stateChangeListeners)
@@ -70,26 +95,45 @@ public abstract class WorldmapState
 
     internal void OnAddedToMap()
     {
+        foreach (PassiveTargetedMutator turnEndMutator in onTurnEndMutators)
+        {
+            EventHandler action = (sender, e) => ProcessTurnEndMutators(turnEndMutator);
+            GameState.TurnEnd += action;
+            turnEndListeners.Add(action);
+        }
+
         foreach (WorldmapPosition neighbor in Position.Neighbors)
         {
-            foreach (PassiveRecipe passiveRecipe in onNeighborChangeRecipes)
+            foreach (PassiveSelfMutator passiveMutator in onNeighborChangeMutators)
             {
-                EventHandler action = (sender, e) => ProcessPassiveRecipe(passiveRecipe);
+                EventHandler action = (sender, e) => ProcessPassiveMutator(passiveMutator);
                 neighbor.StateChanged += action;
                 stateChangeListeners.Add(action);
             }
         }
 
-        foreach(PassiveRecipe recipe in onNeighborChangeRecipes)
+        foreach(PassiveSelfMutator mutator in onNeighborChangeMutators)
         {
-            ProcessPassiveRecipe(recipe);
+            ProcessPassiveMutator(mutator);
         }
     }
 
-    private void ProcessPassiveRecipe(PassiveRecipe recipe)
+    private void ProcessTurnEndMutators(PassiveTargetedMutator mutator)
     {
-        StateChangeResult result = recipe();
-        if(result.StateCanChange)
+        TargetedMutationResult result = mutator();
+        if(result.StatesChanged)
+        {
+            foreach (MutationTarget item in result.Targets)
+            {
+                item.TargetPosition.State = item.NewState;
+            }
+        }
+    }
+
+    private void ProcessPassiveMutator(PassiveSelfMutator mutator)
+    {
+        SelfMutationResult result = mutator();
+        if(result.StateChanged)
         {
             Position.State = result.NewState;
         }

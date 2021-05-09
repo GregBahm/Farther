@@ -6,11 +6,13 @@ using static CardBehavior;
 
 public class InteractionManager : MonoBehaviour
 {
-    private CardsManager cardTray;
+    public MainScript Main;
+
+    private CardsVisualManager cardTray;
 
     private void Start()
     {
-        cardTray = MainScript.Instance.Tray;
+        cardTray = MainScript.Instance.CardsVisualManager;
     }
 
     private void Update()
@@ -46,7 +48,7 @@ public class InteractionManager : MonoBehaviour
         bool canDrop = dropTarget.Model.State.CanDropCardOnTile(card);
         if(canDrop)
         {
-            MainScript.Instance.EnsureCellAndNeighborsExist(dropTarget.Model.X, dropTarget.Model.Y);
+            Main.WorldmapVisualManager.EnsureCellAndNeighborsExist(dropTarget.Model.X, dropTarget.Model.Y);
 
             WorldmapState newState = dropTarget.Model.State.GetFromDrop(card);
             dropTarget.Model.State = newState;
@@ -63,7 +65,7 @@ public class InteractionManager : MonoBehaviour
     {
         Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hitInfo;
-        if (Physics.Raycast(mouseRay, out hitInfo, float.MaxValue, MainScript.Instance.MapLayer))
+        if (Physics.Raycast(mouseRay, out hitInfo, float.MaxValue, Main.WorldmapVisualManager.MapLayer))
         {
             return hitInfo.collider.transform.parent.gameObject.GetComponent<MapCellBehavior>();
         }
@@ -76,7 +78,7 @@ public class InteractionManager : MonoBehaviour
         {
             Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hitInfo;
-            if (Physics.Raycast(mouseRay, out hitInfo, float.MaxValue, MainScript.Instance.CardsLayer))
+            if (Physics.Raycast(mouseRay, out hitInfo, float.MaxValue, Main.CardsVisualManager.CardsLayer))
             {
                 CardBehavior card = hitInfo.collider.gameObject.GetComponent<CardBehavior>();
                 if (card != null)

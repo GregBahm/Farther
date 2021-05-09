@@ -4,14 +4,14 @@ using UnityEngine.UIElements;
 
 public class CardBehavior : MonoBehaviour
 {
-    private CardsManager tray;
+    private CardsVisualManager tray;
 
     public CardType Model { get; private set; }
     public bool IsDragging { get { return tray.DraggedCard == this; } }
 
     public CardBehaviorState State { get; set; }
 
-    public void Initialize(CardsManager tray, CardType model)
+    public void Initialize(CardsVisualManager tray, CardType model)
     {
         this.tray = tray;
         Model = model;

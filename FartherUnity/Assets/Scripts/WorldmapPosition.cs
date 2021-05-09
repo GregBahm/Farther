@@ -8,13 +8,13 @@ using UnityEngine.EventSystems;
 
 public class WorldmapPosition
 {
-    private readonly Worldmap worldmap;
+    public Worldmap Worldmap { get; }
     public Neighbors<string> NeighborsLookup { get; }
     public IEnumerable<WorldmapPosition> Neighbors
     {
         get
         {
-            return NeighborsLookup.Select(item => worldmap.TryGetPositionAt(item))
+            return NeighborsLookup.Select(item => Worldmap.TryGetPositionAt(item))
                 .Where(item => item != null);
         }
     }
@@ -52,7 +52,7 @@ public class WorldmapPosition
         X = x;
         Y = y;
         state = new SitelessState(this, new TerrainState());
-        this.worldmap = worldmap;
+        Worldmap = worldmap;
         MapKey = GetPositionKey(x, y);
         NeighborsLookup = GetNeighborsLookup();
     }

@@ -133,6 +133,7 @@ GameObject:
   - component: {fileID: 140054482}
   - component: {fileID: 140054484}
   - component: {fileID: 140054485}
+  - component: {fileID: 140054487}
   - component: {fileID: 140054486}
   m_Layer: 0
   m_Name: MainScript
@@ -154,16 +155,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GenerateCard: 0
-  TilePrefab: {fileID: 8609940853070482932, guid: c7dba8462f4d0a848b451d638aca8b46,
-    type: 3}
-  Tray: {fileID: 140054484}
-  WorldmapTransform: {fileID: 585764783}
-  CardsLayer:
-    serializedVersion: 2
-    m_Bits: 256
-  MapLayer:
-    serializedVersion: 2
-    m_Bits: 512
+  CardsVisualManager: {fileID: 140054484}
+  WorldmapVisualManager: {fileID: 140054487}
 --- !u!4 &140054483
 Transform:
   m_ObjectHideFlags: 0
@@ -194,6 +187,9 @@ MonoBehaviour:
   MaxCardSpacing: 2
   CardPrefab: {fileID: 3700232182761677531, guid: ec6715c6f030aeb4ca5e01e8766c4a60,
     type: 3}
+  CardsLayer:
+    serializedVersion: 2
+    m_Bits: 256
   TrayTransform: {fileID: 2140823562}
 --- !u!114 &140054485
 MonoBehaviour:
@@ -207,6 +203,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ecff21a797c34d45b64814cb11dcc96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Main: {fileID: 140054482}
 --- !u!114 &140054486
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -284,6 +281,25 @@ MonoBehaviour:
   - Label: Wetland
     Type: 15
     Texture: {fileID: 2800000, guid: 82af79a3b4f46e244b8aa754810589b2, type: 3}
+--- !u!114 &140054487
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 140054481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 887f78bc06793704d99864d48251fbf8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Main: {fileID: 140054482}
+  MapLayer:
+    serializedVersion: 2
+    m_Bits: 512
+  WorldmapTransform: {fileID: 585764783}
+  MapPositionPrefab: {fileID: 8609940853070482932, guid: c7dba8462f4d0a848b451d638aca8b46,
+    type: 3}
 --- !u!1 &585764782
 GameObject:
   m_ObjectHideFlags: 0

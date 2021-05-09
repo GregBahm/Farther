@@ -8,14 +8,14 @@ public class SitelessState : WorldmapState
         : base(position, terrain, SiteType.None) 
     { }
 
-    protected override IEnumerable<PassiveRecipe> GetOnNeighborChangeRecipes()
+    protected override IEnumerable<PassiveSelfMutator> GetOnNeighborChangeMutators()
     {
         yield return SeaToCoast;
         yield return CoastToLake;
         yield return LakeToOasis;
     }
 
-    protected override IEnumerable<DropRecipe> GetDropRecipes()
+    protected override IEnumerable<CardDropMutator> GetDropMutators()
     {
         yield return EarthOnVoid;
         yield return GreeneryOnPlains;
@@ -27,13 +27,16 @@ public class SitelessState : WorldmapState
         yield return DragonLair;
     }
 
-    private StateChangeResult DragonLair(Card card)
+    private SelfMutationResult DragonLair(Card card)
     {
         bool shouldChange = card.Type == CardType.Wilds
             && Terrain.Mythic
             && Terrain.Type == MapTerrainType.Mountain;
-        WorldmapState dragonState = new DragonLairState(Position, Terrain, SiteType.DragonLair);
-        return new StateChangeResult(shouldChange, dragonState);
+        WorldmapState dragonState = new DragonLairState(Position, 
+            Terrain,
+            0, 
+            0);
+        return new SelfMutationResult(shouldChange, dragonState);
     }
 
     private static readonly HashSet<MapTerrainType> seaTypes =
@@ -54,11 +57,11 @@ public class SitelessState : WorldmapState
                 MapTerrainType.Tundra,
         };
 
-    private StateChangeResult LakeToOasis()
+    private SelfMutationResult LakeToOasis()
     {
         bool shouldChange = GetShouldChangeLakeToOasis();
         SitelessState newState = shouldChange ? GetLakeToOasis() : null;
-        return new StateChangeResult(shouldChange, newState);
+        return new SelfMutationResult(shouldChange, newState);
     }
 
     private SitelessState GetLakeToOasis()
@@ -78,11 +81,11 @@ public class SitelessState : WorldmapState
     }
 
     // Coast turns to lake if it is surrounded by land or coast tiles that are also surrounded by land
-    private StateChangeResult CoastToLake()
+    private SelfMutationResult CoastToLake()
     {
         bool shouldChange = GetShouldChangeCoastToLake();
         SitelessState newState = shouldChange ? GetCoastToLake() : null;
-        return new StateChangeResult(shouldChange, newState);
+        return new SelfMutationResult(shouldChange, newState);
     }
 
     private SitelessState GetCoastToLake()
@@ -115,11 +118,11 @@ public class SitelessState : WorldmapState
     }
 
     // Sea turns to coast if it is touching any land
-    private StateChangeResult SeaToCoast()
+    private SelfMutationResult SeaToCoast()
     {
         bool shouldChange = GetShouldChangeSeaToCoast();
         SitelessState newState = shouldChange ? GetSeaToCoast() : null;
-        return new StateChangeResult(shouldChange, newState);
+        return new SelfMutationResult(shouldChange, newState);
     }
 
     private SitelessState GetSeaToCoast()
@@ -141,12 +144,12 @@ public class SitelessState : WorldmapState
         return !seaTypes.Contains(item) && item != MapTerrainType.Void;
     }
 
-    private StateChangeResult EarthOnLand(Card card)
+    private SelfMutationResult EarthOnLand(Card card)
     {
         bool canDrop = card.Type == CardType.Earth
             && hillTypes.Contains(Terrain.Type);
         SitelessState newState = canDrop ? GetEarthOnLand() : null;
-        return new StateChangeResult(canDrop, newState);
+        return new SelfMutationResult(canDrop, newState);
     }
 
     private SitelessState GetEarthOnLand()
@@ -162,12 +165,12 @@ public class SitelessState : WorldmapState
         return new SitelessState(Position, newTerrain.ToState());
     }
 
-    private StateChangeResult FloodOnVoid(Card card)
+    private SelfMutationResult FloodOnVoid(Card card)
     {
         bool canDrop = card.Type == CardType.Depths
             && Terrain.Type == MapTerrainType.Void;
         SitelessState newState = canDrop ? GetFloodOnVoid() : null;
-        return new StateChangeResult(canDrop, newState);
+        return new SelfMutationResult(canDrop, newState);
     }
 
     private SitelessState GetFloodOnVoid()
@@ -177,13 +180,13 @@ public class SitelessState : WorldmapState
         return new SitelessState(Position, newTerrain.ToState());
     }
 
-    private StateChangeResult FloodOnPlains(Card card)
+    private SelfMutationResult FloodOnPlains(Card card)
     {
         bool canDrop = card.Type == CardType.Depths
             && Terrain.Type == MapTerrainType.Plains
             && !Terrain.Hill;
         SitelessState newState = canDrop ? GetFloodOnPlains() : null;
-        return new StateChangeResult(canDrop, newState);
+        return new SelfMutationResult(canDrop, newState);
     }
 
     private SitelessState GetFloodOnPlains()
@@ -193,13 +196,13 @@ public class SitelessState : WorldmapState
         return new SitelessState(Position, newTerrain.ToState());
     }
 
-    private StateChangeResult FloodOnForest(Card card)
+    private SelfMutationResult FloodOnForest(Card card)
     {
         bool canDrop = card.Type == CardType.Depths
             && Terrain.Type == MapTerrainType.Forest
             && !Terrain.Hill;
         SitelessState newState = canDrop ? GetFloodOnForest() : null;
-        return new StateChangeResult(canDrop, newState);
+        return new SelfMutationResult(canDrop, newState);
     }
 
     private SitelessState GetFloodOnForest()
@@ -209,13 +212,13 @@ public class SitelessState : WorldmapState
         return new SitelessState(Position, newTerrain.ToState());
     }
 
-    private StateChangeResult GreeneryOnGreenery(Card card)
+    private SelfMutationResult GreeneryOnGreenery(Card card)
     {
         bool canDrop = card.Type == CardType.Greenery
             && (Terrain.Type == MapTerrainType.Grassland
             || Terrain.Type == MapTerrainType.Savannah);
         SitelessState state = canDrop ? GetGreeneryOnGreenery() : null;
-        return new StateChangeResult(canDrop, state);
+        return new SelfMutationResult(canDrop, state);
     }
 
     private SitelessState GetGreeneryOnGreenery()
@@ -229,13 +232,13 @@ public class SitelessState : WorldmapState
         return new SitelessState(Position, newTerrain.ToState());
     }
 
-    private StateChangeResult GreeneryOnPlains(Card card)
+    private SelfMutationResult GreeneryOnPlains(Card card)
     {
         bool canDrop = card.Type == CardType.Greenery &&
             (Terrain.Type == MapTerrainType.Plains
             || Terrain.Type == MapTerrainType.Desert);
         SitelessState newState = canDrop ? GetGreeneryOnPlains() : null;
-        return new StateChangeResult(canDrop, newState);
+        return new SelfMutationResult(canDrop, newState);
     }
 
     private SitelessState GetGreeneryOnPlains()
@@ -249,11 +252,11 @@ public class SitelessState : WorldmapState
         return new SitelessState(Position, newTerrain.ToState());
     }
 
-    private StateChangeResult EarthOnVoid(Card card)
+    private SelfMutationResult EarthOnVoid(Card card)
     {
         bool canDrop = card.Type == CardType.Earth && Terrain.Type == MapTerrainType.Void;
         SitelessState newState = canDrop ? GetEarthOnVoid() : null;
-        return new StateChangeResult(canDrop, newState);
+        return new SelfMutationResult(canDrop, newState);
     }
 
     private SitelessState GetEarthOnVoid()
