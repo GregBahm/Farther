@@ -51,6 +51,8 @@ class DragonLairState : MapCellState
 
     private SelfMutationResult WarriorDropped(Card card)
     {
+        bool canDrop = (card.Type != CardType.Warrior);
+        
         // Need to figure out the warrior's level.
         // So I guess I'll need to cast the warrior to a warrior card and get its level.
         // Then I'll need to set up Mutations to allow drops, in case the warrior slays the dragon.

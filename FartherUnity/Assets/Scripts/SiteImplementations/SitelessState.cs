@@ -18,11 +18,11 @@ public class SitelessState : MapCellState
     protected override IEnumerable<CardDropMutator> GetDropMutators()
     {
         yield return EarthOnVoid;
-        yield return GreeneryOnPlains;
-        yield return GreeneryOnGreenery;
-        yield return FloodOnForest;
-        yield return FloodOnPlains;
-        yield return FloodOnVoid;
+        yield return PlantsOnPlains;
+        yield return PlantsOnPlants;
+        yield return WaterOnForest;
+        yield return WaterOnGrassland;
+        yield return WaterOnVoid;
         yield return EarthOnLand;
         yield return DragonLair;
     }
@@ -165,63 +165,63 @@ public class SitelessState : MapCellState
         return new SitelessState(Cell, newTerrain.ToState());
     }
 
-    private SelfMutationResult FloodOnVoid(Card card)
+    private SelfMutationResult WaterOnVoid(Card card)
     {
-        bool canDrop = card.Type == CardType.Depths
+        bool canDrop = card.Type == CardType.Water
             && Terrain.Type == MapTerrainType.Void;
-        SitelessState newState = canDrop ? GetFloodOnVoid() : null;
+        SitelessState newState = canDrop ? GetWaterOnVoid() : null;
         return new SelfMutationResult(canDrop, newState);
     }
 
-    private SitelessState GetFloodOnVoid()
+    private SitelessState GetWaterOnVoid()
     {
         TerrainStateBuilder newTerrain = Terrain.ToBuilder();
         newTerrain.Type = MapTerrainType.Sea;
         return new SitelessState(Cell, newTerrain.ToState());
     }
 
-    private SelfMutationResult FloodOnPlains(Card card)
+    private SelfMutationResult WaterOnGrassland(Card card)
     {
-        bool canDrop = card.Type == CardType.Depths
-            && Terrain.Type == MapTerrainType.Plains
+        bool canDrop = card.Type == CardType.Water
+            && Terrain.Type == MapTerrainType.Grassland
             && !Terrain.Hill;
-        SitelessState newState = canDrop ? GetFloodOnPlains() : null;
+        SitelessState newState = canDrop ? GetWaterOnGrassland() : null;
         return new SelfMutationResult(canDrop, newState);
     }
 
-    private SitelessState GetFloodOnPlains()
+    private SitelessState GetWaterOnGrassland()
     {
         TerrainStateBuilder newTerrain = Terrain.ToBuilder();
         newTerrain.Type = MapTerrainType.Wetland;
         return new SitelessState(Cell, newTerrain.ToState());
     }
 
-    private SelfMutationResult FloodOnForest(Card card)
+    private SelfMutationResult WaterOnForest(Card card)
     {
-        bool canDrop = card.Type == CardType.Depths
+        bool canDrop = card.Type == CardType.Water
             && Terrain.Type == MapTerrainType.Forest
             && !Terrain.Hill;
-        SitelessState newState = canDrop ? GetFloodOnForest() : null;
+        SitelessState newState = canDrop ? GetWaterOnForest() : null;
         return new SelfMutationResult(canDrop, newState);
     }
 
-    private SitelessState GetFloodOnForest()
+    private SitelessState GetWaterOnForest()
     {
         TerrainStateBuilder newTerrain = Terrain.ToBuilder();
         newTerrain.Type = MapTerrainType.Swamp;
         return new SitelessState(Cell, newTerrain.ToState());
     }
 
-    private SelfMutationResult GreeneryOnGreenery(Card card)
+    private SelfMutationResult PlantsOnPlants(Card card)
     {
-        bool canDrop = card.Type == CardType.Greenery
+        bool canDrop = card.Type == CardType.Plants
             && (Terrain.Type == MapTerrainType.Grassland
             || Terrain.Type == MapTerrainType.Savannah);
-        SitelessState state = canDrop ? GetGreeneryOnGreenery() : null;
+        SitelessState state = canDrop ? GetPlantsOnPlants() : null;
         return new SelfMutationResult(canDrop, state);
     }
 
-    private SitelessState GetGreeneryOnGreenery()
+    private SitelessState GetPlantsOnPlants()
     {
         TerrainStateBuilder newTerrain = Terrain.ToBuilder();
         if (Terrain.Temperature > 0)
@@ -232,16 +232,16 @@ public class SitelessState : MapCellState
         return new SitelessState(Cell, newTerrain.ToState());
     }
 
-    private SelfMutationResult GreeneryOnPlains(Card card)
+    private SelfMutationResult PlantsOnPlains(Card card)
     {
-        bool canDrop = card.Type == CardType.Greenery &&
+        bool canDrop = card.Type == CardType.Plants &&
             (Terrain.Type == MapTerrainType.Plains
             || Terrain.Type == MapTerrainType.Desert);
-        SitelessState newState = canDrop ? GetGreeneryOnPlains() : null;
+        SitelessState newState = canDrop ? GetPlantsOnPlains() : null;
         return new SelfMutationResult(canDrop, newState);
     }
 
-    private SitelessState GetGreeneryOnPlains()
+    private SitelessState GetPlantsOnPlains()
     {
         TerrainStateBuilder newTerrain = Terrain.ToBuilder();
         if (Terrain.Temperature < 0)

@@ -6,14 +6,10 @@ using UnityEngine;
 
 public class MainScript : MonoBehaviour
 {
-    public bool GenerateCard;
-
-    public Game Game { get; private set; }
-
     public CardBehaviorManager CardsBehaviorManager;
     public MapBehaviorManager MapBehaviorManager;
 
-    private int cardCreationIndex;
+    public Game Game { get; private set; }
 
     public static MainScript Instance { get; private set; }
 
@@ -28,31 +24,14 @@ public class MainScript : MonoBehaviour
         CardsBehaviorManager.Cards = Game.Cards;
         MapBehaviorManager.Map = Game.Map;
         Game.Map.EnsureCellAndNeighborsExist(0, 0);
-        CreateSomeCards();
+        CreateInitialHand();
     }
 
-    private void CreateSomeCards()
+    private void CreateInitialHand()
     {
-        for (int i = 0; i < 5; i++)
-        {
-            CreateCard();
-        }
-    }
-
-    private void CreateCard()
-    {
-        CardType nextType = (CardType)cardCreationIndex;
-        Game.Cards.Add(new Card(nextType));
-        cardCreationIndex++;
-        cardCreationIndex %= Enum.GetValues(typeof(CardType)).Length;
-    }
-
-    private void Update()
-    {
-        if(GenerateCard)
-        {
-            GenerateCard = false;
-            CreateCard();
-        }
+        Game.Cards.Add(new Card(CardType.Earth));
+        Game.Cards.Add(new Card(CardType.Water));
+        Game.Cards.Add(new Card(CardType.Plants));
+        Game.Cards.Add(new WarriorCard(1));
     }
 }

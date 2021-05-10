@@ -3,9 +3,10 @@
 public enum CardType
 {
     Civilization = 3,
-    Depths = 1,
+    Water = 1,
     Earth = 0,
-    Greenery = 2,
+    Plants = 2,
+    Warrior = 6,
     Wealth = 4,
     Wilds = 5,
 }
