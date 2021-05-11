@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 class DragonLairState : MapCellState
 {
-    public readonly int currentDragonAttitude;
     public const int MaxHostility = -5;
     public const int PacificationThreshold = 1;
     public const int AllyThreshold = 5;
@@ -14,7 +13,11 @@ class DragonLairState : MapCellState
 
     public DragonDisposition Disposition { get; }
 
+    public int Attitude { get; }
+
     public int TurnsSinceTribute { get; }
+
+    public int Level { get; }
 
     public enum DragonDisposition
     {
@@ -25,59 +28,101 @@ class DragonLairState : MapCellState
 
     public DragonLairState(MapCell position, 
         TerrainState terrain,
-        int currentDragonAttitude,
-        int turnsSinceTribute) 
+        int level = 0,
+        int attitude = 0,
+        int turnsSinceTribute = 0) 
         : base(position, terrain, SiteType.DragonLair)
     {
-        this.currentDragonAttitude = currentDragonAttitude;
+        Level = level;
+        Attitude = attitude;
         TurnsSinceTribute = turnsSinceTribute;
         Disposition = GetDisposition();
     }
 
     private DragonDisposition GetDisposition()
     {
-        if (currentDragonAttitude >= AllyThreshold)
+        if (Attitude >= AllyThreshold)
             return DragonDisposition.Ally;
-        if (currentDragonAttitude >= PacificationThreshold)
+        if (Attitude >= PacificationThreshold)
             return DragonDisposition.Pacified;
         return DragonDisposition.Hostile;
     }
 
-    protected override IEnumerable<CardDropMutator> GetDropMutators()
+    protected override IEnumerable<CardDropEffector> GetDropMutators()
     {
         yield return TributeDropped;
         yield return WarriorDropped;
     }
 
-    private SelfMutationResult WarriorDropped(Card card)
+    private EffectorResult WarriorDropped(Card card)
     {
-        bool canDrop = (card.Type != CardType.Warrior);
-        
-        // Need to figure out the warrior's level.
-        // So I guess I'll need to cast the warrior to a warrior card and get its level.
-        // Then I'll need to set up Mutations to allow drops, in case the warrior slays the dragon.
-        // And I'll also need to potentially give back a warrior card upgraded or injured.
-        // So that will require expanding the card and card management aspect of gamestate
+        if(card.Type != CardType.Warrior)
+        {
+            return EffectorResult.NoEffect;
+        }
+        WarriorCard warriorCard = card as WarriorCard;
         throw new NotImplementedException();
     }
 
-    protected override IEnumerable<PassiveTargetedMutator> GetOnTurnEndMutators()
+    protected override IEnumerable<Effector> GetOnTurnEndEffectors()
     {
-        return base.GetOnTurnEndMutators();
+        yield return NextTurnDragon;
         // TODO need to set up an update that drains a timer
         // And then when the timer falls, have the dragon start raiding
         // And then after raiding, grow in menace
     }
 
-    private SelfMutationResult TributeDropped(Card card)
+    private EffectorResult NextTurnDragon()
+    {
+        DragonLairStateBuilder builder = ToBuilder();
+        builder.Attitude += 1;
+        return new EffectorResult(builder.ToState());
+    }
+
+    private EffectorResult TributeDropped(Card card)
     {
         bool canDrop = card.Type == CardType.Wealth && Disposition != DragonDisposition.Ally;
         DragonLairState newState = canDrop ? GetOnTributeDropped() : null;
-        return new SelfMutationResult(canDrop, newState);
+        return new EffectorResult(newState);
     }
 
     private DragonLairState GetOnTributeDropped()
     {
-        return new DragonLairState(Cell, Terrain, currentDragonAttitude + 1, 0);
+        DragonLairStateBuilder builder = ToBuilder();
+        builder.Attitude += 1;
+        return builder.ToState();
+    }
+
+    private class DragonLairStateBuilder
+    {
+        private readonly DragonLairState originalState;
+
+        public int Attitude { get; set; }
+
+        public int TurnsSinceTribute { get; set; }
+
+        public int Level { get; set; }
+
+        public DragonLairStateBuilder(DragonLairState originalState)
+        {
+            this.originalState = originalState;
+            Attitude = originalState.Attitude;
+            TurnsSinceTribute = originalState.TurnsSinceTribute;
+            Level = originalState.Level;
+        }
+
+        public DragonLairState ToState()
+        {
+            return new DragonLairState(originalState.Cell, 
+                originalState.Terrain, 
+                Level, 
+                Attitude, 
+                TurnsSinceTribute);
+        }
+    }
+
+    private DragonLairStateBuilder ToBuilder()
+    {
+        return new DragonLairStateBuilder(this);
     }
 }

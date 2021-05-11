@@ -8,9 +8,12 @@ class WarriorCard : Card
 {
     public int Level { get; }
 
-    public WarriorCard(int level) 
+    public int TurnsWounded { get; }
+
+    public WarriorCard(int level = 0, int turnsWounded = 0) 
         : base(CardType.Warrior)
     {
         Level = level;
+        TurnsWounded = turnsWounded;
     }
 }

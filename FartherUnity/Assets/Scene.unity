@@ -182,7 +182,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8059bc5ab24a0c442a7bbbac5852a4af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CardHandWidth: 0
+  CardHandWidth: 20
   MaxCardSpacing: 2
   CardPrefab: {fileID: 3700232182761677531, guid: ec6715c6f030aeb4ca5e01e8766c4a60,
     type: 3}

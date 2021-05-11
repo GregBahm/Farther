@@ -4,18 +4,18 @@ using System.Linq;
 
 public class SitelessState : MapCellState
 {
-    public SitelessState(MapCell position, TerrainState terrain)
-        : base(position, terrain, SiteType.None) 
+    public SitelessState(MapCell cell, TerrainState terrain)
+        : base(cell, terrain, SiteType.None) 
     { }
 
-    protected override IEnumerable<PassiveSelfMutator> GetOnNeighborChangeMutators()
+    protected override IEnumerable<Effector> GetOnNeighborChangeEffectors()
     {
         yield return SeaToCoast;
         yield return CoastToLake;
         yield return LakeToOasis;
     }
 
-    protected override IEnumerable<CardDropMutator> GetDropMutators()
+    protected override IEnumerable<CardDropEffector> GetDropMutators()
     {
         yield return EarthOnVoid;
         yield return PlantsOnPlains;
@@ -27,16 +27,14 @@ public class SitelessState : MapCellState
         yield return DragonLair;
     }
 
-    private SelfMutationResult DragonLair(Card card)
+    private EffectorResult DragonLair(Card card)
     {
         bool shouldChange = card.Type == CardType.Wilds
             && Terrain.Mythic
             && Terrain.Type == MapTerrainType.Mountain;
-        MapCellState dragonState = new DragonLairState(Cell, 
-            Terrain,
-            0, 
-            0);
-        return new SelfMutationResult(shouldChange, dragonState);
+        if (shouldChange)
+            return new EffectorResult(new DragonLairState(Cell, Terrain));
+        return EffectorResult.NoEffect;
     }
 
     private static readonly HashSet<MapTerrainType> seaTypes =
@@ -57,11 +55,12 @@ public class SitelessState : MapCellState
                 MapTerrainType.Tundra,
         };
 
-    private SelfMutationResult LakeToOasis()
+    private EffectorResult LakeToOasis()
     {
         bool shouldChange = GetShouldChangeLakeToOasis();
-        SitelessState newState = shouldChange ? GetLakeToOasis() : null;
-        return new SelfMutationResult(shouldChange, newState);
+        if (shouldChange)
+            return new EffectorResult(GetLakeToOasis());
+        return EffectorResult.NoEffect;
     }
 
     private SitelessState GetLakeToOasis()
@@ -81,11 +80,12 @@ public class SitelessState : MapCellState
     }
 
     // Coast turns to lake if it is surrounded by land or coast tiles that are also surrounded by land
-    private SelfMutationResult CoastToLake()
+    private EffectorResult CoastToLake()
     {
         bool shouldChange = GetShouldChangeCoastToLake();
-        SitelessState newState = shouldChange ? GetCoastToLake() : null;
-        return new SelfMutationResult(shouldChange, newState);
+        if (shouldChange)
+            return new EffectorResult(GetCoastToLake());
+        return EffectorResult.NoEffect;
     }
 
     private SitelessState GetCoastToLake()
@@ -118,11 +118,12 @@ public class SitelessState : MapCellState
     }
 
     // Sea turns to coast if it is touching any land
-    private SelfMutationResult SeaToCoast()
+    private EffectorResult SeaToCoast()
     {
         bool shouldChange = GetShouldChangeSeaToCoast();
-        SitelessState newState = shouldChange ? GetSeaToCoast() : null;
-        return new SelfMutationResult(shouldChange, newState);
+        if (shouldChange)
+            return new EffectorResult(GetSeaToCoast());
+        return EffectorResult.NoEffect;
     }
 
     private SitelessState GetSeaToCoast()
@@ -144,12 +145,13 @@ public class SitelessState : MapCellState
         return !seaTypes.Contains(item) && item != MapTerrainType.Void;
     }
 
-    private SelfMutationResult EarthOnLand(Card card)
+    private EffectorResult EarthOnLand(Card card)
     {
         bool canDrop = card.Type == CardType.Earth
             && hillTypes.Contains(Terrain.Type);
-        SitelessState newState = canDrop ? GetEarthOnLand() : null;
-        return new SelfMutationResult(canDrop, newState);
+        if (canDrop)
+            return new EffectorResult(GetEarthOnLand());
+        return EffectorResult.NoEffect;
     }
 
     private SitelessState GetEarthOnLand()
@@ -165,12 +167,13 @@ public class SitelessState : MapCellState
         return new SitelessState(Cell, newTerrain.ToState());
     }
 
-    private SelfMutationResult WaterOnVoid(Card card)
+    private EffectorResult WaterOnVoid(Card card)
     {
         bool canDrop = card.Type == CardType.Water
             && Terrain.Type == MapTerrainType.Void;
-        SitelessState newState = canDrop ? GetWaterOnVoid() : null;
-        return new SelfMutationResult(canDrop, newState);
+        if (canDrop)
+            return new EffectorResult(GetWaterOnVoid());
+        return EffectorResult.NoEffect;
     }
 
     private SitelessState GetWaterOnVoid()
@@ -180,13 +183,14 @@ public class SitelessState : MapCellState
         return new SitelessState(Cell, newTerrain.ToState());
     }
 
-    private SelfMutationResult WaterOnGrassland(Card card)
+    private EffectorResult WaterOnGrassland(Card card)
     {
         bool canDrop = card.Type == CardType.Water
             && Terrain.Type == MapTerrainType.Grassland
             && !Terrain.Hill;
-        SitelessState newState = canDrop ? GetWaterOnGrassland() : null;
-        return new SelfMutationResult(canDrop, newState);
+        if (canDrop)
+            return new EffectorResult(GetWaterOnGrassland());
+        return EffectorResult.NoEffect;
     }
 
     private SitelessState GetWaterOnGrassland()
@@ -196,13 +200,14 @@ public class SitelessState : MapCellState
         return new SitelessState(Cell, newTerrain.ToState());
     }
 
-    private SelfMutationResult WaterOnForest(Card card)
+    private EffectorResult WaterOnForest(Card card)
     {
         bool canDrop = card.Type == CardType.Water
             && Terrain.Type == MapTerrainType.Forest
             && !Terrain.Hill;
-        SitelessState newState = canDrop ? GetWaterOnForest() : null;
-        return new SelfMutationResult(canDrop, newState);
+        if (canDrop)
+            return new EffectorResult(GetWaterOnForest());
+        return EffectorResult.NoEffect;
     }
 
     private SitelessState GetWaterOnForest()
@@ -212,13 +217,14 @@ public class SitelessState : MapCellState
         return new SitelessState(Cell, newTerrain.ToState());
     }
 
-    private SelfMutationResult PlantsOnPlants(Card card)
+    private EffectorResult PlantsOnPlants(Card card)
     {
         bool canDrop = card.Type == CardType.Plants
             && (Terrain.Type == MapTerrainType.Grassland
             || Terrain.Type == MapTerrainType.Savannah);
-        SitelessState state = canDrop ? GetPlantsOnPlants() : null;
-        return new SelfMutationResult(canDrop, state);
+        if (canDrop)
+            return new EffectorResult(GetPlantsOnPlants());
+        return EffectorResult.NoEffect;
     }
 
     private SitelessState GetPlantsOnPlants()
@@ -232,13 +238,14 @@ public class SitelessState : MapCellState
         return new SitelessState(Cell, newTerrain.ToState());
     }
 
-    private SelfMutationResult PlantsOnPlains(Card card)
+    private EffectorResult PlantsOnPlains(Card card)
     {
         bool canDrop = card.Type == CardType.Plants &&
             (Terrain.Type == MapTerrainType.Plains
             || Terrain.Type == MapTerrainType.Desert);
-        SitelessState newState = canDrop ? GetPlantsOnPlains() : null;
-        return new SelfMutationResult(canDrop, newState);
+        if (canDrop)
+            return new EffectorResult(GetPlantsOnPlains());
+        return EffectorResult.NoEffect;
     }
 
     private SitelessState GetPlantsOnPlains()
@@ -252,11 +259,12 @@ public class SitelessState : MapCellState
         return new SitelessState(Cell, newTerrain.ToState());
     }
 
-    private SelfMutationResult EarthOnVoid(Card card)
+    private EffectorResult EarthOnVoid(Card card)
     {
         bool canDrop = card.Type == CardType.Earth && Terrain.Type == MapTerrainType.Void;
-        SitelessState newState = canDrop ? GetEarthOnVoid() : null;
-        return new SelfMutationResult(canDrop, newState);
+        if (canDrop)
+            return new EffectorResult(GetEarthOnVoid());
+        return EffectorResult.NoEffect;
     }
 
     private SitelessState GetEarthOnVoid()

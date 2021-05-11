@@ -6,7 +6,10 @@ using System.Linq;
 
 public abstract class MapCellState
 {
-    protected MapCell Cell { get; }
+    private static readonly IEnumerable<Effector> NoEffectors = new Effector[0];
+    private static readonly IEnumerable<CardDropEffector> NoCardDropEffectors = new CardDropEffector[0];
+
+    public MapCell Cell { get; }
 
     public TerrainState Terrain { get; }
 
@@ -14,20 +17,18 @@ public abstract class MapCellState
 
     public Game Game { get { return Cell.Map.Game; } }
 
-    protected delegate SelfMutationResult CardDropMutator(Card card);
+    protected delegate EffectorResult CardDropEffector(Card card);
 
-    protected delegate SelfMutationResult PassiveSelfMutator();
-
-    protected delegate TargetedMutationResult PassiveTargetedMutator();
+    protected delegate EffectorResult Effector();
 
     // Evaluated when a card is dropped on the worldmap slot
-    private readonly IEnumerable<CardDropMutator> dropMutators;
+    private readonly IEnumerable<CardDropEffector> dropMutators;
 
     // Evaluated when the state of a neighboring slot changes
-    private readonly IEnumerable<PassiveSelfMutator> onNeighborChangeMutators;
+    private readonly IEnumerable<Effector> onNeighborChangeEffectors;
 
     // Evaluated when a turn ends
-    private readonly IEnumerable<PassiveTargetedMutator> onTurnEndMutators;
+    private readonly IEnumerable<Effector> onTurnEndEffectors;
 
     public MapCellState(MapCell cell,
         TerrainState terrain,
@@ -37,36 +38,36 @@ public abstract class MapCellState
         Terrain = terrain;
         SiteType = siteType;
         dropMutators = GetDropMutators().ToArray();
-        onNeighborChangeMutators = GetOnNeighborChangeMutators().ToArray();
-        onTurnEndMutators = GetOnTurnEndMutators().ToArray();
+        onNeighborChangeEffectors = GetOnNeighborChangeEffectors().ToArray();
+        onTurnEndEffectors = GetOnTurnEndEffectors().ToArray();
     }
 
     public bool CanDropCardOnTile(Card card)
     {
-        return dropMutators.Any(item => item(card).StateChanged);
+        return dropMutators.Any(item => item(card).AnyEffect);
     }
 
-    protected virtual IEnumerable<CardDropMutator> GetDropMutators()
+    protected virtual IEnumerable<CardDropEffector> GetDropMutators()
     {
-        return new CardDropMutator[0];
+        return NoCardDropEffectors;
     }
 
-    protected virtual IEnumerable<PassiveSelfMutator> GetOnNeighborChangeMutators()
+    protected virtual IEnumerable<Effector> GetOnNeighborChangeEffectors()
     {
-        return new PassiveSelfMutator[0];
+        return NoEffectors;
     }
 
-    protected virtual IEnumerable<PassiveTargetedMutator> GetOnTurnEndMutators()
+    protected virtual IEnumerable<Effector> GetOnTurnEndEffectors()
     {
-        return new PassiveTargetedMutator[0];
+        return NoEffectors;
     }
 
-    public SelfMutationResult GetFromDrop(Card card)
+    public EffectorResult GetFromDrop(Card card)
     {
-        foreach (CardDropMutator item in dropMutators)
+        foreach (CardDropEffector item in dropMutators)
         {
-            SelfMutationResult result = item(card);
-            if (result.StateChanged)
+            EffectorResult result = item(card);
+            if (result.AnyEffect)
             {
                 return result;
             }
@@ -95,47 +96,36 @@ public abstract class MapCellState
 
     internal void OnAddedToMap()
     {
-        foreach (PassiveTargetedMutator turnEndMutator in onTurnEndMutators)
+        foreach (Effector turnEndEffector in onTurnEndEffectors)
         {
-            EventHandler action = (sender, e) => ProcessTurnEndMutators(turnEndMutator);
+            EventHandler action = (sender, e) => ProcessTurnEndEffector(turnEndEffector);
             Game.TurnEnd += action;
             turnEndListeners.Add(action);
         }
 
         foreach (MapCell neighbor in Cell.Neighbors)
         {
-            foreach (PassiveSelfMutator passiveMutator in onNeighborChangeMutators)
+            foreach (Effector effector in onNeighborChangeEffectors)
             {
-                EventHandler action = (sender, e) => ProcessPassiveMutator(passiveMutator);
+                EventHandler action = (sender, e) => effector().ApplyEffect(Game);
                 neighbor.StateChanged += action;
                 stateChangeListeners.Add(action);
             }
         }
 
-        foreach(PassiveSelfMutator mutator in onNeighborChangeMutators)
+        foreach(Effector effector in onNeighborChangeEffectors)
         {
-            ProcessPassiveMutator(mutator);
+            effector().ApplyEffect(Game);
         }
     }
 
-    private void ProcessTurnEndMutators(PassiveTargetedMutator mutator)
+    private void ProcessTurnEndEffector(Effector effector)
     {
-        TargetedMutationResult result = mutator();
-        if(result.StatesChanged)
-        {
-            foreach (MutationTarget item in result.Targets)
-            {
-                item.TargetPosition.State = item.NewState;
-            }
-        }
-    }
+        EffectorResult result = effector();
 
-    private void ProcessPassiveMutator(PassiveSelfMutator mutator)
-    {
-        SelfMutationResult result = mutator();
-        if(result.StateChanged)
+        foreach (MapCellState item in result.NewStates)
         {
-            Cell.State = result.NewState;
+            item.Cell.State = item;
         }
     }
 }

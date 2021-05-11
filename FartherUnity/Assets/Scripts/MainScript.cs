@@ -32,6 +32,6 @@ public class MainScript : MonoBehaviour
         Game.Cards.Add(new Card(CardType.Earth));
         Game.Cards.Add(new Card(CardType.Water));
         Game.Cards.Add(new Card(CardType.Plants));
-        Game.Cards.Add(new WarriorCard(1));
+        Game.Cards.Add(new WarriorCard());
     }
 }

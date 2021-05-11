@@ -33,9 +33,7 @@ public class Game
     {
         Map.EnsureCellAndNeighborsExist(cell.X, cell.Y);
 
-        SelfMutationResult result = cell.State.GetFromDrop(card);
-        cell.State = result.NewState;
-
-        Cards.Add(result.GainedCards);
+        EffectorResult result = cell.State.GetFromDrop(card);
+        result.ApplyEffect(this);
     }
 }
